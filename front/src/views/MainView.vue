@@ -1,49 +1,38 @@
-<template >
+<template>
   <div id="m"></div>
   <p>favorite movie</p>
-  <span>
-    <MovieCard @click="router.push({name:'moviedetail'})"/>
-  </span>
+  <div>
+    <div class="row row-cols-2 row-cols-md-3 g-4" v-if="movielist.length">
+      <MovieCard
+        v-for="movie in movielist"
+        :key="movie.id"
+        :movie="movie"
+      />
+    </div>
+  </div>
 
   <p>least favorite movie</p>
-  <span>
-    <MovieCard 
-    @click="router.push({name:'moviedetail'})"
-    />
-  </span>
-
   <p>favorite actor</p>
-  <span>
-    <ActorCard
-    @click="router.push({name:'actordetail'})" 
-    />
-  </span>
-
   <p>least favorite actor</p>
-  <span>
-    <ActorCard
-    @click="router.push({name:'actordetail'})" 
-    />
-  </span>
-
+  <ActorCard/>
 </template>
 
 <script setup>
-
-import {useRouter} from 'vue-router'
+import { ref, onMounted } from 'vue'
 import { useMovieStore } from '@/stores/counter'
 import MovieCard from '@/components/movie/MovieCard.vue'
 import ActorCard from '@/components/actor/ActorCard.vue'
 
 
+const store = useMovieStore()
 
-const router = useRouter()
-
-
+const movielist = ref([])
+// console.log(movielist);
+onMounted(async () => {
+  await store.getMovies() 
+  movielist.value = store.MovieList
+})
 </script>
 
-
 <style scoped>
-
-
 </style>

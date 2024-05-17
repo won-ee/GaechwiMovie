@@ -1,18 +1,10 @@
 <template>
   <h1><p>{{ keyword }}</p></h1>
   <h3>영화</h3>
-  <span>
-    <MovieCard 
-    @click="router.push({name:'moviedetail'})"
-    />
-  </span>
+
 
   <h3>인물</h3>
-  <span>
-    <ActorCard
-    @click="router.push({name:'actordetail'})" 
-    />
-  </span>
+
 
 </template>
 
@@ -29,6 +21,7 @@ const keyword = ref('');
 onMounted(() => {
   console.log(route.params.name);
   keyword.value = route.params.name
+  console.log(keyword);
 })
 
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <h1>영화 자세한 페이지</h1>
+
   <MovieDetailInfo/>
 </template>
 

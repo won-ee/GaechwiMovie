@@ -13,7 +13,7 @@ const router = createRouter({
       component: MainView
     },
     {
-      path: '/moviedetail/',
+      path: '/moviedetail/:movieId',
       name: 'moviedetail',
       component: MovieDetailView
     },
