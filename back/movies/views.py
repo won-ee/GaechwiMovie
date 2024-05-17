@@ -12,8 +12,9 @@ from .serializers import (
     MovieListSerializer,
     ReviewSerializer,
     MovieSerializer,
+    ActorSerializer,
 )
-from .models import Movie, Review
+from .models import Movie, Review, Actor
 
 # 모든 영화
 @api_view(['GET'])
@@ -74,6 +75,43 @@ def delete_review(request, movie_pk, review_pk):
         return Response(serializer.data, status=status.HTTP_200_OK)
     else:
         return Response(
-            {'error': '권한이 없습니다.'}, status=status.HTTP_403_FORBIDDEN
-        )
+            {'error': '권한이 없습니다.'}, status=status.HTTP_403_FORBIDDEN)
+
+# 배우 디테일
+@api_view(['GET'])
+def actor_detail(request, actor_pk):
+    actor = get_object_or_404(Actor, pk=actor_pk)
+    serializer = ActorSerializer(actor)
+    return Response(serializer.data)
+
+# 영화 좋아요
+@api_view(['POST'])
+def like_movie(request, movie_pk):
+    user = request.user
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    if movie.like_users.filter(pk=user.pk).exists():
+        movie.like_users.remove(user)
+        serializer = MovieSerializer(movie)
+        return Response(serializer.data)
+    else:
+        if movie.dislike_users.filter(pk=user.pk).exists():
+            movie.dislike_users.remove(user)
+        movie.like_users.add(user)
+        serializer = MovieSerializer(movie)
+        return Response(serializer.data)
     
+# 영화 싫어요
+@api_view(['POST'])
+def like_movie(request, movie_pk):
+    user = request.user
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    if movie.dislike_users.filter(pk=user.pk).exists():
+        movie.dislike_users.remove(user)
+        serializer = MovieSerializer(movie)
+        return Response(serializer.data)
+    else:
+        if movie.like_users.filter(pk=user.pk).exists():
+            movie.like_users.remove(user)
+        movie.dislike_users.add(user)
+        serializer = MovieSerializer(movie)
+        return Response(serializer.data)

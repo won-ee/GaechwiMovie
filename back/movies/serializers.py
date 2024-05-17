@@ -71,3 +71,16 @@ class ReviewSerializer(serializers.ModelSerializer):
             'updated_at',
         )
         read_only_fields = ('movie',)
+
+class ActorSerializer(serializers.ModelSerializer):
+
+    class MovieSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Movie
+            fields = ('title', 'poster_path',)
+
+    movies = MovieSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Actor
+        fields = ('name', 'profile_path', 'movies')
