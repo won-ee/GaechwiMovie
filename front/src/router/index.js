@@ -1,14 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainView from '@/views/MainView.vue'
-import CommunityView from '@/views/CommunityView.vue'
-import DetailView from'@/views/DetailView.vue'
+import MovieDetailView from'@/views/MovieDetailView.vue'
+import ActorDetailView from'@/views/ActorDetailView.vue'
 import IndexView from '@/views/IndexView.vue'
-import LoginView from '@/views/LoginView.vue'
-import RandomView from '@/views/RandomView.vue'
-import RecommendView from '@/views/RecommendView.vue'
-import SignUpView from '@/views/SignUpView.vue'
-
-
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,39 +13,19 @@ const router = createRouter({
       component: MainView
     },
     {
-      path: '/community/',
-      name: 'community',
-      component: CommunityView
+      path: '/moviedetail/',
+      name: 'moviedetail',
+      component: MovieDetailView
     },
     {
-      path: '/detail/',
-      name: 'detail',
-      component: DetailView
+      path: '/actordetail/',
+      name: 'actordetail',
+      component: ActorDetailView
     },
     {
-      path: '/index/',
-      name: 'index',
+      path: '/indexView/:name',
+      name: 'indexView',
       component: IndexView
-    },
-    {
-      path: '/login/',
-      name: 'login',
-      component: LoginView
-    },
-    {
-      path: '/randam/',
-      name: 'randam',
-      component: RandomView
-    },
-    {
-      path: '/recommend/',
-      name: 'recommend',
-      component: RecommendView
-    },
-    {
-      path: '/signup/',
-      name: 'signup',
-      component: SignUpView
     },
   ]
 })
