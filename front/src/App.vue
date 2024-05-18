@@ -8,19 +8,19 @@
     <div class="collapse navbar-collapse" id="navbarScroll">
       <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
         <li class="nav-item">
-          <a class="nav-link" >영화추천</a>
+          <a class="nav-link" @click="router.push({name:'movierecommend'})" >영화추천</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" >호불호</a>
+          <a class="nav-link" @click="router.push({name:'moviechoice'})" >호불호</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" >로그인</a>
+          <a class="nav-link" @click="router.push({name:'userlogin'})" >로그인</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" >회원가입</a>
+          <a class="nav-link" @click="router.push({name:'usersignup'})" >회원가입</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" >프로필</a>
+          <a class="nav-link" @click="router.push({name:'userprofile'})" >프로필</a>
         </li>
 
       </ul>
