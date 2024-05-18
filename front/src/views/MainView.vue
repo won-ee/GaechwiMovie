@@ -14,14 +14,14 @@
   <p>least favorite movie</p>
   <p>favorite actor</p>
   <p>least favorite actor</p>
-  <ActorCard/>
+
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useMovieStore } from '@/stores/counter'
 import MovieCard from '@/components/movie/MovieCard.vue'
-import ActorCard from '@/components/actor/ActorCard.vue'
+// import ActorCard from '@/components/actor/ActorCard.vue'
 
 
 const store = useMovieStore()

@@ -30,7 +30,7 @@
           v-for="actor in movie.actors"
           :key="actor.id"
         >
-          <img class="actor-image" :src="getImageUrl(actor.profile_path)" />
+          <img class="actor-image" :src="getImageUrl(actor.profile_path)" @click="router.push({name:'actordetail',params:{'actorId':actor.pk}})" />
           <div>{{ actor.name }}</div>
         </div>
       </div>
@@ -41,10 +41,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import {useRoute} from 'vue-router'
+import {useRoute,useRouter} from 'vue-router'
 import axios from'axios'
 
 const route = useRoute()
+const router = useRouter()
 
 const movie =ref([])
 const getMovies = function(){
@@ -54,6 +55,7 @@ const getMovies = function(){
     })
     .then((response) => {
       movie.value = response.data
+      console.log(movie.value.actors);
     })
     .catch((error) => {
       console.log(error)
