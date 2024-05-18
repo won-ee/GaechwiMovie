@@ -16,7 +16,7 @@ class MovieSerializer(serializers.ModelSerializer):
     class UserSerializer(serializers.ModelSerializer):
         class Meta:
             model = User
-            fields = ('pk', 'nickname', 'profile_pic')
+            fields = ('pk', 'nickname', 'profile_pic',)
 
     user = UserSerializer(read_only=True)
 
@@ -78,7 +78,7 @@ class ActorSerializer(serializers.ModelSerializer):
     class MovieSerializer(serializers.ModelSerializer):
         class Meta:
             model = Movie
-            fields = ('title', 'poster_path',)
+            fields = ('title', 'poster_path','pk')
 
     movies = MovieSerializer(many=True, read_only=True)
 
