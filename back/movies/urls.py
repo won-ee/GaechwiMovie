@@ -7,6 +7,7 @@ urlpatterns = [
     # 영화 정보
     path('', views.movie_list),
     path('<int:movie_pk>/', views.movie_detail),
+    path('<str:movie_name>/', views.search_movie), 
 
     # 리뷰
     path('<int:movie_pk>/reviews/', views.reviews),
@@ -18,4 +19,5 @@ urlpatterns = [
 
     # 배우
     path('actors/<int:actor_pk>/', views.actor_detail),
+    path('actors/<str:actor_name>/', views.search_actors),
 ]

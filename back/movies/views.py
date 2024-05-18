@@ -13,8 +13,11 @@ from .serializers import (
     ReviewSerializer,
     MovieSerializer,
     ActorSerializer,
+    MovieSearchSerializer
 )
 from .models import Movie, Review, Actor
+
+from jellyfish import jaro_winkler_similarity
 
 # 모든 영화
 @api_view(['GET'])
@@ -115,3 +118,27 @@ def like_movie(request, movie_pk):
         movie.dislike_users.add(user)
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
+    
+# 편집거리 알고리즘
+def search(lst, keyword):
+    fetch_data = []
+    for data in lst:
+        tmp = {'pk': 0, 'title': '', 'poster_path':'', 'similarity':''}
+        tmp['pk'] = data['pk']; tmp['title'] = data['title']; tmp['poster_path'] = data['poster_path']
+        tmp['similarity'] = jaro_winkler_similarity(keyword, data['title'])
+        fetch_data.append(tmp)
+    fetch_data.sort(key=lambda x : -x['similarity'])
+    return fetch_data
+
+# 영화 제목 검색
+@api_view(['GET'])
+def search_movie(request, movie_name):
+    movies = get_list_or_404(Movie)
+    serializer = MovieSearchSerializer(movies, many=True)
+    serializer = search(serializer.data, movie_name)
+    return Response(serializer[:6])
+
+# 배우 이름 검색
+@api_view(['GET'])
+def search_actors(request, actor_name):
+    pass

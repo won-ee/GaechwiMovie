@@ -4,7 +4,7 @@ from .models import *
 
 User = get_user_model()
 
-
+# 영화 목록
 class MovieListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
@@ -44,7 +44,7 @@ class MovieSerializer(serializers.ModelSerializer):
             'words',
         )
 
-
+# 리뷰
 class ReviewSerializer(serializers.ModelSerializer):
     class UserSerializer(serializers.ModelSerializer):
         class Meta:
@@ -72,6 +72,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('movie',)
 
+# 배우
 class ActorSerializer(serializers.ModelSerializer):
 
     class MovieSerializer(serializers.ModelSerializer):
@@ -84,3 +85,12 @@ class ActorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Actor
         fields = ('name', 'profile_path', 'movies')
+
+# 검색한 영화와 비슷한 영화
+class MovieSearchSerializer(serializers.ModelSerializer):
+
+    similarity = serializers.FloatField(default=0)
+
+    class Meta:
+        model = Movie
+        fields = ('pk', 'words', 'title', 'poster_path', 'similarity',)
