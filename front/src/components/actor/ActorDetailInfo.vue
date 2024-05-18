@@ -1,13 +1,19 @@
 <template>
   <h2>{{ actor.name }}</h2>
-  <img class="actor-image" :src="getImageUrl(actor.profile_path)" @click="router.push({name:'actordetail',params:{'actorId':actor.pk}})" />
+  <img class="actor-image" :src="getImageUrl(actor.profile_path)"/>
+  
+
   <div class="container">
     <div class="movie-list-container">
-      <h1 class="keyword-title">{{ keyword }}</h1>
       <h1 class="movie-list-title">Movie</h1>
       <div class="movie-list-wrapper">
         <div class="movie-list" >
-          <ActorMovieCard v-for="movie in actor.movies" :key="movie.id" :movie="movie" />
+          <MovieCard
+        class="movie-item"
+        v-for="movie in actor.movies"
+        :key="movie.id"
+        :movie="movie"
+      />
         </div>
         <i class="fas fa-chevron-right arrow" ></i>
       </div>
@@ -16,17 +22,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import {useRoute,useRouter} from 'vue-router'
-import ActorMovieCard from '@/components/actor/ActorMovieCard.vue';
+import { ref, onMounted,nextTick } from 'vue'
+import {useRoute} from 'vue-router'
+import MovieCard from '@/components/movie/MovieCard.vue'
 import axios from'axios'
 
 const route = useRoute()
-const router = useRouter()
 const actor =ref([])
 
 const getActor = function(){
-    axios({
+    return axios({
       method:'get',
       url:`http://127.0.0.1:8000/movies/actors/${route.params.actorId}/`,
     })
@@ -48,7 +53,8 @@ const getImageUrl = (path) => {
 
 
 onMounted(async () => {
-  await getActor() 
+  await getActor()
+
   await nextTick(() => {
     const arrows = document.querySelectorAll(".arrow");
     const movieLists = document.querySelectorAll(".movie-list");
@@ -72,6 +78,8 @@ onMounted(async () => {
     });
   });
 });
+
+
 </script>
 
 

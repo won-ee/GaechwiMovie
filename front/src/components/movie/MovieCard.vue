@@ -8,8 +8,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { useMovieStore } from '@/stores/counter';
-const store = useMovieStore()
+
 
 defineProps({
   movie:Object
@@ -57,9 +56,8 @@ const getImageUrl = (path) => {
 }
 
 .movie-list-item-title {
-  background-color: #333;
-  padding: 0 10px;
-  font-size: 32px;
+  padding: 0 0px;
+  font-size: 20px;
   font-weight: bold;
   position: absolute;
   top: 10%;
@@ -69,7 +67,6 @@ const getImageUrl = (path) => {
 }
 
 .movie-list-item-desc {
-  background-color: #333;
   padding: 10px;
   font-size: 14px;
   position: absolute;

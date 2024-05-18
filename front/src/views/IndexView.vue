@@ -28,7 +28,6 @@ import { ref, onMounted,nextTick } from 'vue'
 import {useRoute} from 'vue-router'
 import axios from 'axios'
 import MovieCard from '@/components/movie/MovieCard.vue'
-// import ActorCard from '@/components/actor/ActorCard.vue'
 
 const route = useRoute();
 const keyword = ref('');

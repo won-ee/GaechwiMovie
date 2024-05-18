@@ -1,66 +1,69 @@
 <template>
-  <div class="movie-content d-flex">
-    <div class="movie-poster">
-      <img
-        class="mt-2 movie-poster-image"
-        :src="getImageUrl(movie.poster_path)"
-      />
-    </div>
-    <div class="ml-4 w-75">
-      <h1 class="movie-title">{{ movie.title }}</h1>
-      <div class="movie-information-wrapper mt-4 d-flex align-items-center">
-        <div>{{ movie.release_date }}</div>
-        <span class="ml-1">ㆍ</span>
-        <div>{{ movie.runtime }} 분</div>
-        <span class="ml-1">ㆍ</span>
-        <div class="ml-2 d-flex genres-wrapper">
-          <div
-            class="genres"
-            v-for="genre in movie.genres"
-            :key="genre.id"
-          >
-            {{ genre.name }}
-          </div>
+  <div class="container movie-content">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="movie-poster">
+          <img
+            class="mt-2 movie-poster-image img-fluid"
+            :src="getImageUrl(movie.poster_path)"
+          />
         </div>
       </div>
-      <div class="movie-overview mt-3">{{ movie.overview }}</div>
-      <div class="ml-2 d-flex actors-wrapper">
-        <div
-          class="actor"
-          v-for="actor in movie.actors"
-          :key="actor.id"
-        >
-          <img class="actor-image" :src="getImageUrl(actor.profile_path)" @click="router.push({name:'actordetail',params:{'actorId':actor.pk}})" />
-          <div>{{ actor.name }}</div>
+      <div class="col-md-8">
+        <h1 class="movie-title">{{ movie.title }}</h1>
+        <div class="movie-information-wrapper mt-4 d-flex align-items-center">
+          <div>{{ movie.release_date }}</div>
+          <span class="ml-1">ㆍ</span>
+          <div>{{ movie.runtime }} 분</div>
+          <span class="ml-1">ㆍ</span>
+          <div class="ml-2 d-flex genres-wrapper">
+            <div
+              class="genres"
+              v-for="genre in movie.genres"
+              :key="genre.id"
+            >
+              {{ genre.name }}
+            </div>
+          </div>
+        </div>
+        <div class="movie-overview mt-3">{{ movie.overview }}</div>
+        <div class="row actors-wrapper mt-3">
+          <div
+            class="actor col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-3"
+            v-for="actor in movie.actors"
+            :key="actor.id"
+          >
+            <img class="actor-image img-fluid" :src="getImageUrl(actor.profile_path)" @click="router.push({name:'actordetail',params:{'actorId':actor.pk}})" />
+            <div>{{ actor.name }}</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-
 <script setup>
 import { ref, onMounted } from 'vue'
-import {useRoute,useRouter} from 'vue-router'
-import axios from'axios'
+import { useRoute, useRouter } from 'vue-router'
+import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
 
-const movie =ref([])
-const getMovies = function(){
-    axios({
-      method:'get',
-      url:`http://127.0.0.1:8000/movies/${route.params.movieId}`,
-    })
+const movie = ref([])
+const getMovies = function () {
+  axios({
+    method: 'get',
+    url: `http://127.0.0.1:8000/movies/${route.params.movieId}`,
+  })
     .then((response) => {
       movie.value = response.data
-      console.log(movie.value.actors);
+      console.log(movie.value.actors)
     })
     .catch((error) => {
       console.log(error)
     })
-  }
+}
 
 const getImageUrl = (path) => {
   if (!path) {
@@ -69,12 +72,10 @@ const getImageUrl = (path) => {
   return `https://image.tmdb.org/t/p/w500${path}`
 }
 
-
 onMounted(async () => {
-  await getMovies() 
+  await getMovies()
 })
 </script>
-
 
 <style scoped>
 .movie-detail {
@@ -125,20 +126,15 @@ onMounted(async () => {
   font-size: 20px;
 }
 .movie-overview {
-  max-width: 60%;
+  max-width: 100%;
   font-size: 14px;
   color: #dddddddd;
 }
 .homepage-link:hover {
   opacity: 0.5;
 }
-
-.actor {
-  margin-right: 10px;
-  text-align: center;
-}
 .actor-image {
-  width: 100px;
+  width: 100%;
   height: auto;
 }
 </style>
