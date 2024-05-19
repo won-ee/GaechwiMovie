@@ -6,7 +6,7 @@
     <div class="form-container">
       <h2>Sign Up</h2>
       <div class="input-container">
-        <input type="email"class="custom-placeholder" placeholder="Email">
+        <input type="email" class="custom-placeholder" placeholder="Email">
       </div>
       <div class="input-container">
         <input type="password"  class="custom-placeholder" placeholder="Password" v-model="password">
@@ -22,7 +22,8 @@
         <input type="submit" class="custom-button" value="Sign Up" :disabled="password !== confirmPassword || !password || !confirmPassword">
       </div>
       <div class="links-container">
-        <a href="#">Already have an account? Log in</a>
+        <a href="#"  @click="router.push({name:'userlogin'})"> Already have an account?</a>
+        <a href="#"  @click="router.push({name:'userlogin'})"> Log in</a>
       </div>
     </div>
   </div>
@@ -30,7 +31,9 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter() 
 const password = ref('');
 const confirmPassword = ref('');
 

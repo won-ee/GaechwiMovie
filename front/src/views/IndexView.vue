@@ -18,7 +18,24 @@
       </div>
     </div>
   </div>
-  <h3>인물</h3>
+
+  <div class="container" >
+    <div class="movie-list-container" >
+      <h1 class="movie-list-title">Actor</h1>
+      <div class="movie-list-wrapper">
+        <div class="movie-list" v-if="movies.length">
+          <MovieCard
+        class="movie-item"
+        v-for="movie in movies"
+        :key="movie.id"
+        :movie="movie"
+      />
+        </div>
+        <p v-else>검색 결과가 없습니다.</p>
+        <i class="fas fa-chevron-right arrow" ></i>
+      </div>
+    </div>
+  </div>
 
 
 </template>
@@ -32,7 +49,7 @@ import MovieCard from '@/components/movie/MovieCard.vue'
 const route = useRoute();
 const keyword = ref('');
 const movies = ref([])
-
+const actors = ref([])
 
 const fetchData = function(){
     return axios({
@@ -48,10 +65,24 @@ const fetchData = function(){
     })
   }
 
+  const actorfetchData = function(){
+    return axios({
+      method:'get',
+      url:`http://127.0.0.1:8000/movies/actors/${keyword.value}/`,
+    })
+    .then((response) => {
+      console.log(response.data);
+      actors.value = response.data
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
 
 onMounted(async() => {
   keyword.value = route.params.name
   await fetchData()
+  await actorfetchData()
   await nextTick(() => {
     const arrows = document.querySelectorAll(".arrow");
     const movieLists = document.querySelectorAll(".movie-list");

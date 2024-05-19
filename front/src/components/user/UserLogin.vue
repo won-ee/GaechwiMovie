@@ -4,7 +4,7 @@
     <span style="--clr:#00ffdd;"></span>
     <span style="--clr:#e900d5;"></span>
     <div class="form-container">
-      <h2>Login form</h2>
+      <h2>Login</h2>
       <div class="input-container">
         <input type="text" placeholder="Username" class="custom-placeholder">
       </div>
@@ -15,14 +15,16 @@
         <input type="submit" value="Sign in" class="custom-button">
       </div>
       <div class="links-container">
-        <a href="#">Forget Password</a>
-        <a href="#">Signup</a>
+        <a href="#" @click="router.push({name:'usersignup'})">Signup</a>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter() 
 </script>
 
 <style scoped>
@@ -151,12 +153,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 130px;
+  
 }
 
 .links-container a {
   color: #fff;
   text-decoration: none;
+  
 }
 
 .custom-placeholder::placeholder {
