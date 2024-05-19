@@ -1,10 +1,116 @@
 <template>
-  <div>
-    <h1>유저 프로필</h1>
+  <div class="container">
+    <div class="outer-circle">
+      <span style="--clr:#eeff00;"></span>
+      <span style="--clr:#00ffdd;"></span>
+      <span style="--clr:#e900d5;"></span>
+      <div class="profile-container">
+        <div class="profile-picture"></div>
+        <div class="profile-info">
+          <h2>{{ userName }}</h2>
+          <p>{{ userEmail }}</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue';
+
+const userName = ref('임성훈');
+const userEmail = ref('ssafy@example.com');
 </script>
 
-<style></style>
+<style scoped>
+.container {
+  position: relative;
+  width: 500px;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.outer-circle {
+  position: relative;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.outer-circle span {
+  position: absolute;
+  inset: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  transition: 0.5s;
+}
+
+.outer-circle span:nth-child(1) {
+  border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+  animation: animate 6s linear infinite;
+}
+
+.outer-circle span:nth-child(2) {
+  border-radius: 41% 44% 56% 59%/38% 62% 63% 37%;
+  animation: animate 4s linear infinite;
+}
+
+.outer-circle span:nth-child(3) {
+  border-radius: 41% 44% 56% 59%/38% 62% 63% 37%;
+  animation: animate2 10s linear infinite;
+}
+
+.profile-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.profile-picture {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #fff;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+}
+
+h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.5em;
+  margin: 0;
+}
+
+p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1em;
+  margin: 0;
+  color: #666;
+}
+
+@keyframes animate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes animate2 {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+</style>

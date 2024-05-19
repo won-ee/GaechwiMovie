@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div  class="wrapper">
     <UserSignUp />
   </div>
 </template>
@@ -8,4 +8,14 @@
 import UserSignUp from '@/components/user/UserSignUp.vue'
 </script>
 
-<style></style>
+
+<style scoped>
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: -webkit-linear-gradient(to right, #272727, #000000);
+  background: linear-gradient(to right, #202020, #000000);
+}
+</style>

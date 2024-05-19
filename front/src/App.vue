@@ -1,62 +1,33 @@
 <template id ="app">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" @click="router.push({name:'main'})">GaeChwi</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarScroll">
-      <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
-        <li class="nav-item">
-          <a class="nav-link" @click="router.push({name:'movierecommend'})" >영화추천</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" @click="router.push({name:'moviechoice'})" >호불호</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" @click="router.push({name:'userlogin'})" >로그인</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" @click="router.push({name:'usersignup'})" >회원가입</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" @click="router.push({name:'userprofile'})" >프로필</a>
-        </li>
-
-      </ul>
-      <form class="d-flex" role="search" @submit.prevent="searchresultshow">
-        <input 
-        class="form-control me-2" 
-        type="search" 
-        placeholder="Search" 
-        aria-label="Search"
-        v-model="search"
-        >
-        <button class="btn btn-outline-success" type="submit" >Search</button>
-      </form>
-    </div>
+  <div>
+    <NavBar></NavBar>
   </div>
-</nav>
-  <RouterView/>
+ 
+  <div>
+    <RouterView/>
+  </div>
+  
 </template>
 
 <script setup>
-import {ref} from 'vue'
-import {RouterView,useRouter} from 'vue-router'
-const router = useRouter()
+import NavBar from '@/components/nav/NavBar.vue';
 
-
-const search=ref('')
-const searchresultshow = () => {
-  router.push({ name: 'indexView', params: { 'name': search.value } })
-  search.value=''
-}
-
+import {RouterView} from 'vue-router'
 </script>
 
 <style scoped>
-
-.router-link-exact-active {
-  color: white !important
+.app-container {
+  position: relative;
 }
+
+.navbar {
+  position: relative;
+  z-index: 2; /* Ensure NavBar is above RouterView */
+}
+
+.router-view-container {
+  margin-top: 60px; /* Adjust this value according to the height of your NavBar */
+  z-index: 1;
+}
+
 </style>
