@@ -43,8 +43,8 @@ import axios from 'axios'
 import MovieCard from '@/components/movie/MovieCard.vue'
 import ActorCard from '@/components/actor/ActorCard.vue'
 
-const route = useRoute();
-const keyword = ref('');
+const route = useRoute()
+const keyword = ref('')
 const movies = ref([])
 const actors = ref([])
 
@@ -81,51 +81,55 @@ onMounted(async() => {
   await fetchData()
   await actorfetchData()
   await nextTick(() => {
-    const arrows = document.querySelectorAll(".arrow");
-    const movieLists = document.querySelectorAll(".movie-list");
+    const arrows = document.querySelectorAll(".arrow")
+    const movieLists = document.querySelectorAll(".movie-list")
 
     arrows.forEach((arrow, i) => {
-      const itemNumber = movieLists[i].querySelectorAll(".movie-item").length;
-      let clickCounter = 0;
+      const itemNumber = movieLists[i].querySelectorAll(".movie-item").length
+      let clickCounter = 0
+
       arrow.addEventListener("click", () => {
-        const ratio = Math.floor(window.innerWidth / 270);
-        clickCounter++;
-        const currentTransform = window.getComputedStyle(movieLists[i]).transform;
-        const matrix = currentTransform !== 'none' ? currentTransform : 'matrix(1, 0, 0, 1, 0, 0)';
-        const translateX = parseInt(matrix.split(',')[4].trim());
+        const ratio = Math.floor(window.innerWidth / 270)
+        clickCounter++
+        const currentTransform = window.getComputedStyle(movieLists[i]).transform
+        const matrix = currentTransform !== 'none' ? currentTransform : 'matrix(1, 0, 0, 1, 0, 0)'
+        const translateX = parseInt(matrix.split(',')[4].trim())
+
         if (itemNumber - (4 + clickCounter) + (4 - ratio) >= 0) {
-          movieLists[i].style.transform = `translateX(${translateX - 300}px)`;
+          movieLists[i].style.transform = `translateX(${translateX - 300}px)`
         } else {
-          movieLists[i].style.transform = "translateX(0)";
-          clickCounter = 0;
+          movieLists[i].style.transform = "translateX(0)"
+          clickCounter = 0
         }
       });
     });
   });
 
   await nextTick(() => {
-    const arrows = document.querySelectorAll(".actor-arrow");
-    const actorLists = document.querySelectorAll(".actor-list");
+    const arrows = document.querySelectorAll(".actor-arrow")
+    const actorLists = document.querySelectorAll(".actor-list")
 
     arrows.forEach((arrow, i) => {
-      const itemNumber = actorLists[i].querySelectorAll(".actor-item").length;
-      let clickCounter = 0;
+      const itemNumber = actorLists[i].querySelectorAll(".actor-item").length
+      let clickCounter = 0
+
       arrow.addEventListener("click", () => {
-        const ratio = Math.floor(window.innerWidth / 270);
-        clickCounter++;
-        const currentTransform = window.getComputedStyle(actorLists[i]).transform;
-        const matrix = currentTransform !== 'none' ? currentTransform : 'matrix(1, 0, 0, 1, 0, 0)';
-        const translateX = parseInt(matrix.split(',')[4].trim());
+        const ratio = Math.floor(window.innerWidth / 270)
+        clickCounter++
+        const currentTransform = window.getComputedStyle(actorLists[i]).transform
+        const matrix = currentTransform !== 'none' ? currentTransform : 'matrix(1, 0, 0, 1, 0, 0)'
+        const translateX = parseInt(matrix.split(',')[4].trim())
+
         if (itemNumber - (4 + clickCounter) + (4 - ratio) >= 0) {
-          actorLists[i].style.transform = `translateX(${translateX - 300}px)`;
+          actorLists[i].style.transform = `translateX(${translateX - 300}px)`
         } else {
-          actorLists[i].style.transform = "translateX(0)";
-          clickCounter = 0;
+          actorLists[i].style.transform = "translateX(0)"
+          clickCounter = 0
         }
-      });
-    });
-  });
-});
+      })
+    })
+  })
+})
 
 
 </script>

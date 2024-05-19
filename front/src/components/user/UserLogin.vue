@@ -6,13 +6,13 @@
     <div class="form-container">
       <h2>Login</h2>
       <div class="input-container">
-        <input type="text" placeholder="Username" class="custom-placeholder">
+        <input type="text" placeholder="Username" class="custom-placeholder" v-model="username">
       </div>
       <div class="input-container">
-        <input type="password" placeholder="Password" class="custom-placeholder">
+        <input type="password" placeholder="Password" class="custom-placeholder" v-model="password">
       </div>
       <div class="input-container">
-        <input type="submit" value="Sign in" class="custom-button">
+        <input type="submit" value="Sign in" class="custom-button" @click="logIn">
       </div>
       <div class="links-container">
         <a href="#" @click="router.push({name:'usersignup'})">Signup</a>
@@ -22,9 +22,45 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+import axios from 'axios'
 
 const router = useRouter() 
+const username = ref('')
+const password = ref('')
+
+const logIn = () => {
+  if (!username.value) {
+    alert('아이디를 입력해주세요')
+    return
+  }
+  if (!password.value) {
+    alert('비밀번호를 입력해주세요')
+    return
+  }
+
+  const payload = {
+    username: username.value,
+    password: password.value
+  }
+  handleLogin(payload)
+}
+
+const handleLogin = async () => {
+  try {
+    const response = await axios.post('http://127.0.0.1:8000/accounts/login/', {
+      username: username.value,
+      password: password.value
+    })
+
+    if (response.status === 200) {
+      router.push({ name: 'main' })
+    }
+  } catch (error) {
+    console.error('로그인 에러:', error)
+  }
+}
 </script>
 
 <style scoped>
