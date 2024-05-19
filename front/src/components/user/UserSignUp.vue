@@ -6,7 +6,7 @@
     <div class="form-container">
       <h2>Sign Up</h2>
       <div class="input-container">
-        <input type="email" class="custom-placeholder" placeholder="Email" v-model="email">
+        <input type="text" class="custom-placeholder" placeholder="username" v-model="username">
       </div>
       <div class="input-container">
         <input type="password"  class="custom-placeholder" placeholder="Password" v-model="password">
@@ -14,9 +14,6 @@
       <div class="input-container" >
         <input type="password" class="custom-placeholder" placeholder="Confirm Password" v-model="confirmPassword" @input="checkPasswordMatch">
         <span v-if="password && confirmPassword && password !== confirmPassword" style="color: red;">Passwords do not match</span>
-      </div>
-      <div class="input-container">
-        <input type="text" class="custom-placeholder" placeholder="Nickname" v-model="nickname">
       </div>
       <div class="input-container">
         <input type="submit" class="custom-button" value="Sign Up" 
@@ -31,23 +28,18 @@
 </template>
 
 <script setup>
-import axios from 'axios';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import axios from 'axios'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter() 
-const email = ref('');
-const password = ref('');
-const confirmPassword = ref('');
-const nickname =ref('')
+const password = ref('')
+const confirmPassword = ref('')
+const username =ref('')
 
 
 function SignUp() {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email.value)){
-    alert("아이디는 이메일 형식이여야 합니다.")
-    return
-  }
+
   if (password.value.length <8){
     alert("비밀번호를 8자리 이상 입력해 주세요.")
   }
@@ -57,8 +49,7 @@ function SignUp() {
   }
 
   const payload = {
-    Username: nickname.value,
-    Email: email.value,
+    username: username.value,
     password1: password.value,
     password2: confirmPassword.value,
     
@@ -67,6 +58,7 @@ function SignUp() {
 }
 
 const signUpUser = async (payload) => {
+
   const router = useRouter(); 
   try {
     const response = await axios.post("http://127.0.0.1:8000/accounts/signup/", payload);
@@ -75,7 +67,7 @@ const signUpUser = async (payload) => {
       if (confirmed) {
         router.push({ name: "userLogin" });
       } else {
-        router.push({ name: "home" });
+        router.push({ name: "main" });
       }
     }
   } catch (error) {

@@ -5,7 +5,7 @@
       <span style="--clr:#00ffdd;"></span>
       <span style="--clr:#e900d5;"></span>
       <div class="profile-container">
-        <div class="profile-picture"></div>
+        <div class="profile-picture"><img :src="profileSrc" class="profile-picture" alt=""></div>
         <div class="profile-info">
           <h2>{{ userName }}</h2>
           <p>{{ userEmail }}</p>
@@ -16,10 +16,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-
-const userName = ref('임성훈');
-const userEmail = ref('ssafy@example.com');
+import { ref } from 'vue'
+import profileSrc from '@/assets/profile.png'
+const userName = ref('임성훈')
+const userEmail = ref('ssafy@example.com')
 </script>
 
 <style scoped>

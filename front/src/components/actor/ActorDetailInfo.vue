@@ -56,28 +56,28 @@ onMounted(async () => {
   await getActor()
 
   await nextTick(() => {
-    const arrows = document.querySelectorAll(".arrow");
-    const movieLists = document.querySelectorAll(".movie-list");
+    const arrows = document.querySelectorAll(".arrow")
+    const movieLists = document.querySelectorAll(".movie-list")
 
     arrows.forEach((arrow, i) => {
-      const itemNumber = movieLists[i].querySelectorAll(".movie-item").length;
-      let clickCounter = 0;
+      const itemNumber = movieLists[i].querySelectorAll(".movie-item").length
+      let clickCounter = 0
       arrow.addEventListener("click", () => {
-        const ratio = Math.floor(window.innerWidth / 270);
-        clickCounter++;
-        const currentTransform = window.getComputedStyle(movieLists[i]).transform;
-        const matrix = currentTransform !== 'none' ? currentTransform : 'matrix(1, 0, 0, 1, 0, 0)';
-        const translateX = parseInt(matrix.split(',')[4].trim());
+        const ratio = Math.floor(window.innerWidth / 270)
+        clickCounter++
+        const currentTransform = window.getComputedStyle(movieLists[i]).transform
+        const matrix = currentTransform !== 'none' ? currentTransform : 'matrix(1, 0, 0, 1, 0, 0)'
+        const translateX = parseInt(matrix.split(',')[4].trim())
         if (itemNumber - (4 + clickCounter) + (4 - ratio) >= 0) {
-          movieLists[i].style.transform = `translateX(${translateX - 300}px)`;
+          movieLists[i].style.transform = `translateX(${translateX - 300}px)`
         } else {
-          movieLists[i].style.transform = "translateX(0)";
-          clickCounter = 0;
+          movieLists[i].style.transform = "translateX(0)"
+          clickCounter = 0
         }
-      });
-    });
-  });
-});
+      })
+    })
+  })
+})
 
 
 </script>
