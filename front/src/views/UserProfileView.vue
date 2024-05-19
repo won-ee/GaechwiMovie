@@ -7,8 +7,7 @@
       <div class="profile-container">
         <div class="profile-picture"><img :src="profileSrc" class="profile-picture" alt=""></div>
         <div class="profile-info">
-          <h2>{{ userName }}</h2>
-          <p>{{ userEmail }}</p>
+          <h2>{{ profile.username }}</h2>
         </div>
       </div>
     </div>
@@ -18,8 +17,36 @@
 <script setup>
 import { ref } from 'vue'
 import profileSrc from '@/assets/profile.png'
-const userName = ref('임성훈')
-const userEmail = ref('ssafy@example.com')
+import { useMovieStore } from '@/stores/counter'
+import { onMounted } from 'vue'
+import axios from 'axios'
+
+const store = useMovieStore()
+const profile = ref([])
+const userkey = ref(null)
+
+const loadUserKey = async () =>{
+  return userkey.value= store.userkey.value
+}
+
+const userProfile = async ()=>{
+    return axios({
+      method:'get',
+      url:'http://127.0.0.1:8000/accounts/user/',
+      headers: {Authorization: `Token ${userkey.value}`}
+    })
+    .then((response) => {
+      console.log(response.data);
+      profile.value = response.data
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
+  onMounted(async () => {
+  await loadUserKey() 
+  await userProfile()
+    })
 </script>
 
 <style scoped>

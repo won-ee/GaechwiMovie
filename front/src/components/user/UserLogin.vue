@@ -6,10 +6,10 @@
     <div class="form-container">
       <h2>Login</h2>
       <div class="input-container">
-        <input type="text" placeholder="Username" class="custom-placeholder" v-model="username">
+        <input type="text" placeholder="Username" class="custom-placeholder" v-model="username" @keydown.enter="logIn">
       </div>
       <div class="input-container">
-        <input type="password" placeholder="Password" class="custom-placeholder" v-model="password">
+        <input type="password" placeholder="Password" class="custom-placeholder" v-model="password" @keydown.enter="logIn">
       </div>
       <div class="input-container">
         <input type="submit" value="Sign in" class="custom-button" @click="logIn">
@@ -23,9 +23,10 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import {useMovieStore} from '@/stores/counter'
 import { ref } from 'vue'
-import axios from 'axios'
 
+const store = useMovieStore()
 const router = useRouter() 
 const username = ref('')
 const password = ref('')
@@ -44,23 +45,10 @@ const logIn = () => {
     username: username.value,
     password: password.value
   }
-  handleLogin(payload)
+  store.Login(payload)
 }
 
-const handleLogin = async () => {
-  try {
-    const response = await axios.post('http://127.0.0.1:8000/accounts/login/', {
-      username: username.value,
-      password: password.value
-    })
 
-    if (response.status === 200) {
-      router.push({ name: 'main' })
-    }
-  } catch (error) {
-    console.error('로그인 에러:', error)
-  }
-}
 </script>
 
 <style scoped>

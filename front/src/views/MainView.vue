@@ -24,7 +24,6 @@ import { useMovieStore } from '@/stores/counter'
 import MovieCard from '@/components/movie/MovieCard.vue'
 
 
-
 const store = useMovieStore()
 
 const movielist = ref([])

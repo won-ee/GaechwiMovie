@@ -6,14 +6,14 @@
     <div class="form-container">
       <h2>Sign Up</h2>
       <div class="input-container">
-        <input type="text" class="custom-placeholder" placeholder="username" v-model="username">
+        <input type="text" class="custom-placeholder" placeholder="username" v-model="username" @keydown.enter="SignUp">
       </div>
       <div class="input-container">
-        <input type="password"  class="custom-placeholder" placeholder="Password" v-model="password">
+        <input type="password"  class="custom-placeholder" placeholder="Password" v-model="password" @keydown.enter="SignUp">
       </div>
       <div class="input-container" >
-        <input type="password" class="custom-placeholder" placeholder="Confirm Password" v-model="confirmPassword" @input="checkPasswordMatch">
-        <span v-if="password && confirmPassword && password !== confirmPassword" style="color: red;">Passwords do not match</span>
+        <input type="password" class="custom-placeholder" placeholder="Confirm Password" v-model="confirmPassword" @input="checkPasswordMatch" @keydown.enter="SignUp">
+        <span v-if="password && confirmPassword && password !== confirmPassword" style="color: red; font-family: 'Montserrat', sans-serif;">Passwords do not match</span>
       </div>
       <div class="input-container">
         <input type="submit" class="custom-button" value="Sign Up" 
