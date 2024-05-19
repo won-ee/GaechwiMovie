@@ -78,11 +78,7 @@ class ActorSerializer(serializers.ModelSerializer):
     class MovieSerializer(serializers.ModelSerializer):
         class Meta:
             model = Movie
-<<<<<<< HEAD
             fields = ('title', 'poster_path', 'pk')
-=======
-            fields = ('title', 'poster_path','pk')
->>>>>>> fa596fea8a92e2060ad0dc89e0afcebc11634188
 
     movies = MovieSerializer(many=True, read_only=True)
 

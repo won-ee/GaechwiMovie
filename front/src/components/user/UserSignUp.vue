@@ -6,7 +6,7 @@
     <div class="form-container">
       <h2>Sign Up</h2>
       <div class="input-container">
-        <input type="email" class="custom-placeholder" placeholder="Email">
+        <input type="email" class="custom-placeholder" placeholder="Email" v-model="email">
       </div>
       <div class="input-container">
         <input type="password"  class="custom-placeholder" placeholder="Password" v-model="password">
@@ -16,10 +16,11 @@
         <span v-if="password && confirmPassword && password !== confirmPassword" style="color: red;">Passwords do not match</span>
       </div>
       <div class="input-container">
-        <input type="text" class="custom-placeholder" placeholder="Nickname">
+        <input type="text" class="custom-placeholder" placeholder="Nickname" v-model="nickname">
       </div>
       <div class="input-container">
-        <input type="submit" class="custom-button" value="Sign Up" :disabled="password !== confirmPassword || !password || !confirmPassword">
+        <input type="submit" class="custom-button" value="Sign Up" 
+        @click="SignUp()">
       </div>
       <div class="links-container">
         <a href="#"  @click="router.push({name:'userlogin'})"> Already have an account?</a>
@@ -30,18 +31,72 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter() 
+const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
+const nickname =ref('')
 
-function checkPasswordMatch() {
-  // 비밀번호와 확인 비밀번호가 일치하는지 확인
-  // 이를 위해 사용자가 입력한 비밀번호를 비교합니다.
-  // v-model로 바인딩된 password와 confirmPassword를 사용합니다.
+
+function SignUp() {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email.value)){
+    alert("아이디는 이메일 형식이여야 합니다.")
+    return
+  }
+  if (password.value.length <8){
+    alert("비밀번호를 8자리 이상 입력해 주세요.")
+  }
+  if (password.value !== confirmPassword.value) {
+    alert("Passwords do not match");
+    return
+  }
+
+  const payload = {
+    Username: nickname.value,
+    Email: email.value,
+    password1: password.value,
+    password2: confirmPassword.value,
+    
+  }
+  signUpUser(payload)
 }
+
+const signUpUser = async (payload) => {
+  const router = useRouter(); 
+  try {
+    const response = await axios.post("http://127.0.0.1:8000/accounts/signup/", payload);
+    if (response.status === 204) {
+      const confirmed = window.confirm("회원가입 완료. \n 로그인 하시겠습니까?");
+      if (confirmed) {
+        router.push({ name: "userLogin" });
+      } else {
+        router.push({ name: "home" });
+      }
+    }
+  } catch (error) {
+    if (error.response && error.response.data) {
+      const errorData = error.response.data;
+      let errorMessage = "";
+
+      Object.values(errorData).forEach((messages) => {
+        errorMessage += `${messages.join(", ")}\n`;
+      });
+
+      if (errorMessage) {
+        alert(`회원가입 에러:\n${errorMessage}`);
+      }
+    } else {
+      console.error("알 수 없는 에러가 발생했습니다.", error);
+      alert("알 수 없는 에러가 발생했습니다.");
+    }
+  }
+};
+
 </script>
 
 <style scoped>
