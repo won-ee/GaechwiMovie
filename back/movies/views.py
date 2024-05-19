@@ -21,16 +21,17 @@ from .serializers import (
 )
 from .models import Movie, Review, Actor
 from accounts.models import User
+import random
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from jellyfish import jaro_winkler_similarity
 
-# 모든 영화
+# 모든 영화 인기순
 @api_view(['GET'])
 def movie_list(request):
     if request.method == 'GET':
-        movies = Movie.objects.all()
+        movies = Movie.objects.filter(vote_count=100).order_by('-vote_average')
         paginator = Paginator(movies, 20)
 
         page = request.GET.get('page', 1)
@@ -38,7 +39,18 @@ def movie_list(request):
 
         serializer = MovieListSerializer(page_movies, many=True)
         return Response(serializer.data)
+
+
+# 랜덤 영화
+@api_view(['GET'])
+def movie_random(request):
+    movies = Movie.objects.all()
+    random_movies = random.sample(list(movies), 100)
     
+    serializer = MovieSerializer(random_movies, many=True)
+
+    return Response(serializer.data)
+
 # 각 영화별 디테일 정보
 @api_view(['GET'])
 def movie_detail(request, movie_pk):
