@@ -78,7 +78,7 @@ class ActorSerializer(serializers.ModelSerializer):
     class MovieSerializer(serializers.ModelSerializer):
         class Meta:
             model = Movie
-            fields = ('title', 'poster_path','pk')
+            fields = ('title', 'poster_path', 'pk')
 
     movies = MovieSerializer(many=True, read_only=True)
 

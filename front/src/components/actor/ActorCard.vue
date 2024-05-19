@@ -1,8 +1,8 @@
 <template>
   
-  <div  class="movie-list-item" @click="goMovieDetail(movie.pk)" >
-    <img class="movie-list-item-img" :src="getImageUrl(movie.poster_path)" alt="..." />
-    <span class="movie-list-item-title">{{movie.title}}</span>
+  <div  class="actor-list-item" @click="goMovieDetail(actor.pk)" >
+    <img class="actor-list-item-img" :src="getImageUrl(actor.profile_path)" alt="..." />
+    <span class="actor-list-item-title">{{actor.name}}</span>
   </div>
 </template>
 
@@ -11,13 +11,13 @@ import { useRouter } from 'vue-router';
 
 
 defineProps({
-  movie:Object
+  actor:Object
 })
 
 const router = useRouter()
 
 const goMovieDetail=function(id){
-  router.push({name:'moviedetail',params:{'movieId':id}})
+  router.push({name:'actordetail',params:{'actorId':id}})
 }
 
 const getImageUrl = (path) => {
@@ -30,25 +30,25 @@ const getImageUrl = (path) => {
 
 <style scoped>
 
-.movie-list-item {
+.actor-list-item {
+  margin-top: 0px;
   margin-right: 30px;
-  margin-bottom: 0px;
   position: relative;
 }
 
-.movie-list-item:hover .movie-list-item-img {
+.actor-list-item:hover .actor-list-item-img {
   transform: scale(1.2);
   margin: 0 30px;
   opacity: 0.5;
 }
 
-.movie-list-item:hover .movie-list-item-title,
-.movie-list-item:hover .movie-list-item-desc,
-.movie-list-item:hover .movie-list-item-button {
+.actor-list-item:hover .actor-list-item-title,
+.actor-list-item:hover .actor-list-item-desc,
+.actor-list-item:hover .actor-list-item-button {
   opacity: 1;
 }
 
-.movie-list-item-img {
+.actor-list-item-img {
   transition: all 1s ease-in-out;
   width: 200px;
   /* height: 200px; */
@@ -56,7 +56,7 @@ const getImageUrl = (path) => {
   border-radius: 20px;
 }
 
-.movie-list-item-title {
+.actor-list-item-title {
   padding: 0 0px;
   font-size: 20px;
   font-weight: bold;
@@ -67,7 +67,7 @@ const getImageUrl = (path) => {
   transition: 1s all ease-in-out;
 }
 
-.movie-list-item-desc {
+.actor-list-item-desc {
   padding: 10px;
   font-size: 14px;
   position: absolute;
