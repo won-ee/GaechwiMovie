@@ -31,8 +31,8 @@ from jellyfish import jaro_winkler_similarity
 @api_view(['GET'])
 def movie_list(request):
     if request.method == 'GET':
-        movies = Movie.objects.filter(vote_count=100).order_by('-vote_average')
-        paginator = Paginator(movies, 20)
+        movies = Movie.objects.filter(vote_count__gte=10000).order_by('-vote_average')
+        paginator = Paginator(movies, 50)
 
         page = request.GET.get('page', 1)
         page_movies = paginator.get_page(page)
@@ -40,12 +40,24 @@ def movie_list(request):
         serializer = MovieListSerializer(page_movies, many=True)
         return Response(serializer.data)
 
+# 모든 영화 싫어요 순
+@api_view(['GET'])
+def movie_Low_list(request):
+    if request.method == 'GET':
+        movies = Movie.objects.filter(vote_count__gte=10000).order_by('vote_average')
+        paginator = Paginator(movies, 50)
+
+        page = request.GET.get('page', 1)
+        page_movies = paginator.get_page(page)
+
+        serializer = MovieListSerializer(page_movies, many=True)
+        return Response(serializer.data)
 
 # 랜덤 영화
 @api_view(['GET'])
 def movie_random(request):
     movies = Movie.objects.all()
-    random_movies = random.sample(list(movies), 100)
+    random_movies = random.sample(list(movies), 1)
     
     serializer = MovieSerializer(random_movies, many=True)
 
