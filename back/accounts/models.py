@@ -6,8 +6,7 @@ from imagekit.processors import ResizeToFill
 
 # Create your models here.
 class User(AbstractUser):
-    username = models.EmailField(unique=True)
-    nickname = models.CharField(max_length=100, unique=True)
+    email = None
     profile_pic = ProcessedImageField(
         blank=True,
         upload_to='profile/images',
