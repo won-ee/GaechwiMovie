@@ -78,7 +78,11 @@ class ActorSerializer(serializers.ModelSerializer):
     class MovieSerializer(serializers.ModelSerializer):
         class Meta:
             model = Movie
+<<<<<<< HEAD
+            fields = ('title', 'poster_path', 'pk')
+=======
             fields = ('title', 'poster_path','pk')
+>>>>>>> fa596fea8a92e2060ad0dc89e0afcebc11634188
 
     movies = MovieSerializer(many=True, read_only=True)
 
@@ -94,3 +98,49 @@ class MovieSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = ('pk', 'words', 'title', 'poster_path', 'similarity',)
+
+# 검색한 배우와 비슷한 배우
+class ActorSearchSerializer(serializers.ModelSerializer):
+
+    similarity = serializers.FloatField(default=0)
+
+    class Meta:
+        model = Actor
+        fields = ('pk', 'name', 'profile_path', 'movies', 'similarity',)
+
+# 좋아요한 영화
+class UserLikeMovieListSerializer(serializers.ModelSerializer):
+    
+    class MovieSerializer(serializers.ModelSerializer):
+
+        class Meta:
+            model = Movie
+            fields = ('pk', 'words',)
+ 
+    like_movies = MovieSerializer(many=True)
+    
+    class Meta:
+        model = get_user_model()
+        fields = ('pk', 'username', 'like_movies',)
+
+# 싫어요한 영화
+class UserDislikeMovieListSerializer(serializers.ModelSerializer):
+    
+    class MovieSerializer(serializers.ModelSerializer):
+
+        class Meta:
+            model = Movie
+            fields = ('pk', 'words',)
+ 
+    dislike_movies = MovieSerializer(many=True)
+    
+    class Meta:
+        model = get_user_model()
+        fields = ('pk', 'username', 'dislike_movies',)
+
+# 추천 영화
+class UserChoiceSimilarMovieSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Movie
+        fields = ('title', 'poster_path', 'pk')
