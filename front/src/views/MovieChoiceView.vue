@@ -11,13 +11,13 @@
         </div>
           <ul>
             <li>
-              <button>💖 <br><p>개추</p></button> 
+              <button @click="likemovie()">💖 <br><p>개추</p></button> 
             </li>
             <li>
-              <button>💔<br><p>비추</p></button>
+              <button @click="dislikemovie()">💔<br><p>비추</p></button>
             </li>
             <li>
-              <button @click="router.go(0)">❓<br><p>몰루</p></button>
+              <button @click="fetchData">❓<br><p>몰루</p></button>
             </li>
           </ul>
       </div>
@@ -51,14 +51,47 @@ const fetchData = function(){
       url:`http://127.0.0.1:8000/movies/random`,
     })
     .then((response) => {
-      console.log(response.data)
       movie.value = response.data
     })
     .catch((error) => {
       console.log(error)
     })
   }
-  
+
+const likemovie =function(){
+  console.log(movie.value[0].id);
+  axios({
+      method:'post',
+      url:`http://127.0.0.1:8000/movies/${movie.value[0].id}/like`,
+      headers: {Authorization: `Token ${localStorage.getItem('userkey')}`}
+
+    })
+    .then((response) => {
+      console.log(response.data)
+      movie.value = response.data
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+    fetchData()
+}
+
+const dislikemovie =function(){
+  axios({
+      method:'post',
+      url:`http://127.0.0.1:8000/movies/${movie.value[0].id}/dislike`,
+      headers: {Authorization: `Token ${localStorage.getItem('userkey')}`}
+    })
+    .then((response) => {
+      console.log(response.data)
+      movie.value = response.data
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+    fetchData()
+}
+
 onMounted(async () => {
 await fetchData() 
   })
@@ -162,7 +195,7 @@ li{
   }
 }
 button {
-  margin-top: 180px;
+  /* margin-top: 180px; */
   position: relative;
   background: rebeccapurple;
   width: 200px;
