@@ -9,6 +9,17 @@
             <span class="movie-list-item-title">{{movie[0].overview}}</span>
           </div>
         </div>
+          <ul>
+            <li>
+              <button @click="likemovie()">💖 <br><p>개추</p></button> 
+            </li>
+            <li>
+              <button @click="dislikemovie()">💔<br><p>비추</p></button>
+            </li>
+            <li>
+              <button @click="fetchData">❓<br><p>몰루</p></button>
+            </li>
+          </ul>
       </div>
     </div>
   </div>
@@ -40,14 +51,47 @@ const fetchData = function(){
       url:`http://127.0.0.1:8000/movies/random`,
     })
     .then((response) => {
-      console.log(response.data)
       movie.value = response.data
     })
     .catch((error) => {
       console.log(error)
     })
   }
-  
+
+const likemovie =function(){
+  console.log(movie.value[0].id);
+  axios({
+      method:'post',
+      url:`http://127.0.0.1:8000/movies/${movie.value[0].id}/like`,
+      headers: {Authorization: `Token ${localStorage.getItem('userkey')}`}
+
+    })
+    .then((response) => {
+      console.log(response.data)
+      movie.value = response.data
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+    fetchData()
+}
+
+const dislikemovie =function(){
+  axios({
+      method:'post',
+      url:`http://127.0.0.1:8000/movies/${movie.value[0].id}/dislike`,
+      headers: {Authorization: `Token ${localStorage.getItem('userkey')}`}
+    })
+    .then((response) => {
+      console.log(response.data)
+      movie.value = response.data
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+    fetchData()
+}
+
 onMounted(async () => {
 await fetchData() 
   })
@@ -72,6 +116,7 @@ await fetchData()
 }
 
 .movie-list-wrapper {
+  display: flex;
   position: relative;
   overflow: hidden;
 }
@@ -131,5 +176,38 @@ await fetchData()
   transition: 1s all ease-in-out;
 }
 
+ul{
+  padding: 0;
+}
+
+li{
+  display: inline-block;
+  list-style-type: none;
+  margin: 0 10px 10px;
+  &:nth-child(3) button {
+    background: #728618b4;
+  }
+  &:nth-child(2) button {
+    background: #247BA0;
+  }
+  &:nth-child(1) button {
+    background: #942542;
+  }
+}
+button {
+  /* margin-top: 180px; */
+  position: relative;
+  background: rebeccapurple;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border:5px solid white;
+  color: white;
+  font-family: Verdana;
+  font-weight: bold;
+  font-size: 50px;
+  cursor: pointer;
+  padding: 0;
+}
 
 </style>
