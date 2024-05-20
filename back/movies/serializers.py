@@ -8,7 +8,7 @@ User = get_user_model()
 class MovieListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('pk', 'title', 'poster_path', 'vote_average', 'vote_count')
+        fields = ('pk', 'title', 'poster_path', 'vote_average', 'vote_count', 'words')
 
 
 # 단일 영화 상세 정보
@@ -49,7 +49,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     class UserSerializer(serializers.ModelSerializer):
         class Meta:
             model = User
-            fields = ('pk', 'nickname', 'profile_pic')
+            fields = ('pk', 'username', 'profile_pic')
 
     user = UserSerializer(read_only=True)
 
@@ -66,6 +66,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             'pk',
             'user',
             'movie',
+            'title',
             'content',
             'created_at',
             'updated_at',
@@ -93,7 +94,7 @@ class MovieSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Movie
-        fields = ('pk', 'words', 'title', 'poster_path', 'similarity',)
+        fields = ('pk', 'title', 'poster_path')
 
 # 검색한 배우와 비슷한 배우
 class ActorSearchSerializer(serializers.ModelSerializer):
@@ -111,7 +112,7 @@ class UserLikeMovieListSerializer(serializers.ModelSerializer):
 
         class Meta:
             model = Movie
-            fields = ('pk', 'title', 'poster_path')
+            fields = ('pk', 'title', 'poster_path', 'words')
  
     like_movies = MovieSerializer(many=True)
     
@@ -126,7 +127,7 @@ class UserDislikeMovieListSerializer(serializers.ModelSerializer):
 
         class Meta:
             model = Movie
-            fields = ('pk', 'title', 'poster_path')
+            fields = ('pk', 'title', 'poster_path', 'words')
  
     dislike_movies = MovieSerializer(many=True)
     
@@ -139,4 +140,4 @@ class UserChoiceSimilarMovieSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Movie
-        fields = ('title', 'poster_path', 'pk')
+        fields = ('title', 'poster_path', 'pk', 'words')

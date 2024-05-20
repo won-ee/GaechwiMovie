@@ -13,13 +13,14 @@ urlpatterns = [
     path('<int:movie_pk>/dislike', views.dislike_movie),
     path('<int:user_pk>/user_like_movie', views.user_like_movie),
     path('<int:user_pk>/user_dislike_movie', views.user_dislike_movie),
-    path('<int:user_pk>/user_filtered_movie', views.user_filtered_movie_recommendations),
+    # path('<int:user_pk>/user_filtered_movie', views.user_filtered_movie),
+    path('<int:user_pk>/user_filtered_movie', views.similar_like_movie),
     path('<str:movie_name>/', views.search_movie),
 
     # 리뷰
     path('<int:movie_pk>/reviews/', views.reviews),
     path('<int:movie_pk>/create_review/', views.create_review),
-    path('<int:movie_pk>/delete_review/', views.delete_review),
+    path('<int:movie_pk>/<int:review_pk>/delete_review/', views.delete_review),
 
     # 추천
     path('recommended/', views.recommended),

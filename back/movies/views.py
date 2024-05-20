@@ -190,7 +190,11 @@ def search_actors(request, actor_name):
 
 # 추천 알고리즘
 def recommend_movies_names(xMovie, idx, movies):
-    
+    # None값과 빈 문자열을 제거
+    xMovie = [text for text in xMovie if text is not None and text.strip() != '']
+    # 유효한 데이터가 있는 지 확인
+    if not xMovie:
+        return []
     # 불용어 제거
     countVec = CountVectorizer(max_features=10000, stop_words='english')
 
@@ -242,8 +246,8 @@ def similar_like_movie(request, user_pk):
                 idx.append(i)
                 break
     # words 담기
-    xMovie = [data.get('words') for data in movies_serializer.data if data.get('words') is not None]
-
+    print(movies_serializer.data)
+    xMovie = [data.get('words') for data in movies_serializer.data]
     # 유사 영화 pk 반환
     result = recommend_movies_names(xMovie, idx, movies_serializer)
     # 유사 영화 pk 기반 querySet 생성
@@ -292,7 +296,7 @@ def similar_dislike_movie(request, user_pk):
 
 # 좋아요한 영화에서 싫어요한 영화 제외해서 보여주기
 @api_view(['GET'])
-def user_filtered_movie_recommendations(request, user_pk):
+def user_filtered_movie(request, user_pk):
     user = get_object_or_404(User, pk=user_pk)
     
     # 좋아요 한 영화
