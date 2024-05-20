@@ -111,7 +111,7 @@ class UserLikeMovieListSerializer(serializers.ModelSerializer):
 
         class Meta:
             model = Movie
-            fields = ('pk', 'words',)
+            fields = ('pk', 'title', 'poster_path')
  
     like_movies = MovieSerializer(many=True)
     
@@ -126,7 +126,7 @@ class UserDislikeMovieListSerializer(serializers.ModelSerializer):
 
         class Meta:
             model = Movie
-            fields = ('pk', 'words',)
+            fields = ('pk', 'title', 'poster_path')
  
     dislike_movies = MovieSerializer(many=True)
     
