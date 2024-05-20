@@ -6,6 +6,7 @@ app_name = 'movies'
 urlpatterns = [
     # 영화 정보
     path('', views.movie_list),
+    path('worstmovie/', views.movie_Low_list),
     path('<int:movie_pk>/', views.movie_detail),
     path('random', views.movie_random),
     path('<int:movie_pk>/like', views.like_movie),

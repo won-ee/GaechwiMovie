@@ -26,20 +26,18 @@ const profile = ref([])
 const userkey = ref(null)
 
 const loadUserKey = async () =>{
-  return userkey.value = localStorage.getItem('userkey');
-  
+  return userkey.value = localStorage.getItem('userkey')
 }
 
 
 const userProfile = async ()=>{
-  console.log(userkey.value);
+    console.log(userkey.value);
     return axios({
       method:'get',
       url:'http://127.0.0.1:8000/accounts/user/',
       headers: {Authorization: `Token ${userkey.value}`}
     })
     .then((response) => {
-      console.log(response.data);
       profile.value = response.data
     })
     .catch((error) => {
