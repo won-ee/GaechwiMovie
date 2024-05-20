@@ -58,36 +58,14 @@ function SignUp() {
 }
 
 const signUpUser = async (payload) => {
-
-  const router = useRouter(); 
   try {
     const response = await axios.post("http://127.0.0.1:8000/accounts/signup/", payload);
     if (response.status === 204) {
-      const confirmed = window.confirm("회원가입 완료. \n 로그인 하시겠습니까?");
-      if (confirmed) {
-        router.push({ name: "userLogin" });
-      } else {
-        router.push({ name: "main" });
-      }
+        router.push({ name: "userlogin" });
     }
   } catch (error) {
-    if (error.response && error.response.data) {
-      const errorData = error.response.data;
-      let errorMessage = "";
-
-      Object.values(errorData).forEach((messages) => {
-        errorMessage += `${messages.join(", ")}\n`;
-      });
-
-      if (errorMessage) {
-        alert(`회원가입 에러:\n${errorMessage}`);
-      }
-    } else {
-      console.error("알 수 없는 에러가 발생했습니다.", error);
-      alert("알 수 없는 에러가 발생했습니다.");
-    }
-  }
-};
+    console.log(error)
+}}
 
 </script>
 

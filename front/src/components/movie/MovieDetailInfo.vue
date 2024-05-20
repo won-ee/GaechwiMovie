@@ -42,7 +42,8 @@
         </div>
       </div>
     </div>
-    <div>
+  </div>
+  <div>
       <p>review title : <input type="text" style="color: #000;" v-model="reviewtitle"></p>
       <br>
       <p>review content : <input type="text" style="color: #000;" v-model="reviewcontent"></p>
@@ -52,7 +53,6 @@
         <p v-if="review.title" :id="review.pk" >{{ review.title }}<button  style="color: #000;" @click="deleteRiview(review.pk)">삭제</button> </p>
         <p v-if="review.content" :id="review.pk">{{ review.content }}<button  style="color: #000;" @click="deleteRiview(review.pk)">삭제</button></p>
     </div>
-  </div>
 
 
 
@@ -147,6 +147,39 @@ const deleteRiview = function(reviewpk){
     reviewcontent.value =''
     
     getReview()
+}
+
+const likemovie =function(){
+  axios({
+      method:'post',
+      url:`http://127.0.0.1:8000/movies/${movie.value.id}/like`,
+      headers: {Authorization: `Token ${localStorage.getItem('userkey')}`}
+
+    })
+    .then((response) => {
+      console.log(response.data)
+      movie.value = response.data
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+    fetchData()
+}
+
+const dislikemovie =function(){
+  axios({
+      method:'post',
+      url:`http://127.0.0.1:8000/movies/${movie.value.id}/dislike`,
+      headers: {Authorization: `Token ${localStorage.getItem('userkey')}`}
+    })
+    .then((response) => {
+      console.log(response.data)
+      movie.value = response.data
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+    fetchData()
 }
 
 onMounted(async () => {

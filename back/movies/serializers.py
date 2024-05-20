@@ -94,7 +94,7 @@ class MovieSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Movie
-        fields = ('pk', 'title', 'poster_path')
+        fields = ('pk', 'title', 'poster_path', 'similarity')
 
 # 검색한 배우와 비슷한 배우
 class ActorSearchSerializer(serializers.ModelSerializer):
