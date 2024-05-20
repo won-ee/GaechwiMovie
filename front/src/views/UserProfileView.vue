@@ -18,6 +18,7 @@ import axios from 'axios'
 const profile = ref([])
 const userkey = ref(null)
 const userid = localStorage.getItem('userid')
+const movielist = ref([])
 
 const loadUserKey = async () =>{
   return userkey.value = localStorage.getItem('userkey')
@@ -25,7 +26,6 @@ const loadUserKey = async () =>{
 
 
 const userProfile = async ()=>{
-    console.log(userkey.value);
     return axios({
       method:'get',
       url:'http://127.0.0.1:8000/accounts/user/',
@@ -33,7 +33,21 @@ const userProfile = async ()=>{
     })
     .then((response) => {
       profile.value = response.data
-      console.log(profile.value )
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
+
+const getMovie = async ()=>{
+    return axios({
+      method:'get',
+      url:`http://127.0.0.1:8000/movies/${userid}/user_like_movie`,
+    })
+    .then((response) => {
+      console.log(response.data )
+      movielist.value = response.data
+      
     })
     .catch((error) => {
       console.log(error)
@@ -42,6 +56,7 @@ const userProfile = async ()=>{
   onMounted(async () => {
   await loadUserKey() 
   await userProfile()
+  await getMovie()
     })
 </script>
 

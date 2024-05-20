@@ -24,7 +24,8 @@
             >
               {{ genre.name }}
             </div>
-            <button class="custom-btn btn-5" @click="likemovie"><span>개추</span></button>
+            <button class="custom-btn btn-5" @click="likemovie"><span>개추💖</span></button>
+            <button class="custom-btn btn-5" @click="dislikemovie"><span>비추💔</span></button>
           </div>
 
         </div>
@@ -53,6 +54,7 @@ const route = useRoute()
 const router = useRouter()
 
 const movie = ref([])
+
 const getMovies = function () {
   axios({
     method: 'get',
@@ -81,6 +83,21 @@ const likemovie =function(){
       url:`http://127.0.0.1:8000/movies/${movie.value.id}/like`,
       headers: {Authorization: `Token ${localStorage.getItem('userkey')}`}
 
+    })
+    .then((response) => {
+      console.log(response.data)
+      movie.value = response.data
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
+
+const dislikemovie =function(){
+  axios({
+      method:'post',
+      url:`http://127.0.0.1:8000/movies/${movie.value.id}/dislike`,
+      headers: {Authorization: `Token ${localStorage.getItem('userkey')}`}
     })
     .then((response) => {
       console.log(response.data)
@@ -157,7 +174,7 @@ onMounted(async () => {
   height: auto;
 }
 .btn-5 {
-  width: 130px;
+  width: 50px;
   height: 40px;
   line-height: 42px;
   padding: 0;
