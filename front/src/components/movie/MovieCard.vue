@@ -1,9 +1,8 @@
 <template>
-  
-  <div  class="movie-list-item" @click="goMovieDetail(movie.pk)" >
-    <img class="movie-list-item-img" :src="getImageUrl(movie.poster_path)" alt="..." />
-    <span class="movie-list-item-title">{{movie.title}}</span>
-  </div>
+    <div  class="movie-list-item" @click="goMovieDetail(movie.pk)" >
+      <img class="movie-list-item-img" :src="getImageUrl(movie.poster_path)" alt="..." />
+      <span class="movie-list-item-title">{{movie.title}}</span>
+    </div>
 </template>
 
 <script setup>
