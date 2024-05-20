@@ -24,7 +24,9 @@
             >
               {{ genre.name }}
             </div>
+            <button class="custom-btn btn-5" @click="likemovie"><span>개추</span></button>
           </div>
+
         </div>
         <div class="movie-overview mt-3">{{ movie.overview }}</div>
         <div class="row actors-wrapper mt-3">
@@ -58,7 +60,7 @@ const getMovies = function () {
   })
     .then((response) => {
       movie.value = response.data
-      console.log(movie.value.actors)
+      // console.log(movie.value.actors)
     })
     .catch((error) => {
       console.log(error)
@@ -70,6 +72,23 @@ const getImageUrl = (path) => {
     return
   }
   return `https://image.tmdb.org/t/p/w500${path}`
+}
+
+const likemovie =function(){
+  console.log(movie.value.id);
+  axios({
+      method:'post',
+      url:`http://127.0.0.1:8000/movies/${movie.value.id}/like`,
+      headers: {Authorization: `Token ${localStorage.getItem('userkey')}`}
+
+    })
+    .then((response) => {
+      console.log(response.data)
+      movie.value = response.data
+    })
+    .catch((error) => {
+      console.log(error)
+    })
 }
 
 onMounted(async () => {
@@ -136,5 +155,45 @@ onMounted(async () => {
 .actor-image {
   width: 100%;
   height: auto;
+}
+.btn-5 {
+  width: 130px;
+  height: 40px;
+  line-height: 42px;
+  padding: 0;
+  border: none;
+  background: rgb(255, 255, 255);
+  background: linear-gradient(0deg, rgb(20, 20, 20) 0%, rgb(20, 20, 20) 100%);
+}
+.btn-5:hover {
+  color: #ffffff;
+  background: transparent;
+   box-shadow:none;
+}
+.btn-5:before,
+.btn-5:after{
+  content:'';
+  position:absolute;
+  top:0;
+  right:0;
+  height:2px;
+  width:0;
+  background: #ffffff;
+  box-shadow:
+   -1px -1px 5px 0px #fff,
+   7px 7px 20px 0px #0003,
+   4px 4px 5px 0px #0002;
+  transition:400ms ease all;
+}
+.btn-5:after{
+  right:inherit;
+  top:inherit;
+  left:0;
+  bottom:0;
+}
+.btn-5:hover:before,
+.btn-5:hover:after{
+  width:100%;
+  transition:800ms ease all;
 }
 </style>

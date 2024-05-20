@@ -46,13 +46,27 @@ export const useMovieStore = defineStore('movie', () => {
       }
     })
     .then((response) => {
-      console.log(response.data)
       userkey.value = response.data
       isLogin.value = true
-      console.log(response.data);
       localStorage.setItem('userkey', response.data.key)
       localStorage.setItem('isLogin', 'true')
       router.push({ name: 'main' })
+      userProfile(response.data.key)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
+
+  const userProfile = function(key){
+
+    axios({
+      method:'get',
+      url:'http://127.0.0.1:8000/accounts/user/',
+      headers: {Authorization: `Token ${key}`}
+    })
+    .then((response) => {
+      localStorage.setItem('userid', response.data.pk)
     })
     .catch((error) => {
       console.log(error)
@@ -64,6 +78,7 @@ export const useMovieStore = defineStore('movie', () => {
     userkey.value = null
     localStorage.removeItem('userkey')
     localStorage.removeItem('isLogin')
+    localStorage.removeItem('userid')
   }
 
   return { MovieList, getMovies, userkey, Login, isLogin, logOut,getWorstMovies,WorstMovieList}
