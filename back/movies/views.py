@@ -222,6 +222,7 @@ def user_like_movie(request, user_pk):
     movies = get_list_or_404(Movie)
     movies_serializer = MovieListSerializer(movies, many=True)
     
+
     # user가 좋아요한 영화 key값 담기
     movie_key = [data['pk'] for data in serializer.data.get('like_movies')]
 
@@ -233,11 +234,10 @@ def user_like_movie(request, user_pk):
                 idx.append(i)
                 break
     # words 담기
-    xMovie = [data.get('words') for data in movies_serializer.data]
+    xMovie = [data.get('words') for data in movies_serializer.data if data.get('words') is not None]
 
     # 유사 영화 pk 반환
     result = recommend_movies_names(xMovie, idx, movies_serializer)
-
     # 유사 영화 pk 기반 querySet 생성
     final_movie = [get_object_or_404(Movie, pk=i) for i in result]
     final_serializer = UserChoiceSimilarMovieSerializer(final_movie, many=True)
