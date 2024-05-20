@@ -19,7 +19,7 @@ urlpatterns = [
     # 리뷰
     path('<int:movie_pk>/reviews/', views.reviews),
     path('<int:movie_pk>/create_review/', views.create_review),
-    path('<int:movie_pk>/delete_review/', views.delete_review),
+    path('<int:movie_pk>/<int:review_pk>/delete_review/', views.delete_review),
 
     # 추천
     path('recommended/', views.recommended),

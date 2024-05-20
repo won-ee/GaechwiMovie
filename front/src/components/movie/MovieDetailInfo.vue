@@ -42,7 +42,20 @@
         </div>
       </div>
     </div>
+    <div>
+      <p>review title : <input type="text" style="color: #000;" v-model="reviewtitle"></p>
+      <br>
+      <p>review content : <input type="text" style="color: #000;" v-model="reviewcontent"></p>
+      <input type="submit" value="리뷰쓰기" style="color: #000;" @click="goReview">
   </div>
+    <div v-for="review in reviewlist">
+        <p v-if="review.title" :id="review.pk" >{{ review.title }}<button  style="color: #000;" @click="deleteRiview(review.pk)">삭제</button> </p>
+        <p v-if="review.content" :id="review.pk">{{ review.content }}<button  style="color: #000;" @click="deleteRiview(review.pk)">삭제</button></p>
+    </div>
+  </div>
+
+
+
 </template>
 
 <script setup>
@@ -52,17 +65,19 @@ import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
-
 const movie = ref([])
+const reviewlist = ref([])
+const reviewtitle=ref('')
+const reviewcontent=ref('')
+const userkey = localStorage.getItem('userkey')
 
-const getMovies = function () {
-  axios({
+const getMovies = async () => {
+  return axios({
     method: 'get',
     url: `http://127.0.0.1:8000/movies/${route.params.movieId}`,
   })
     .then((response) => {
       movie.value = response.data
-      // console.log(movie.value.actors)
     })
     .catch((error) => {
       console.log(error)
@@ -76,40 +91,68 @@ const getImageUrl = (path) => {
   return `https://image.tmdb.org/t/p/w500${path}`
 }
 
-const likemovie =function(){
-  console.log(movie.value.id);
-  axios({
-      method:'post',
-      url:`http://127.0.0.1:8000/movies/${movie.value.id}/like`,
-      headers: {Authorization: `Token ${localStorage.getItem('userkey')}`}
 
-    })
+const getReview = async ()=> {
+  return axios({
+    method: 'get',
+    url: `http://127.0.0.1:8000/movies/${movie.value.id}/reviews`,
+  })
     .then((response) => {
-      console.log(response.data)
-      movie.value = response.data
+      reviewlist.value = response.data
     })
     .catch((error) => {
       console.log(error)
     })
 }
 
-const dislikemovie =function(){
-  axios({
-      method:'post',
-      url:`http://127.0.0.1:8000/movies/${movie.value.id}/dislike`,
-      headers: {Authorization: `Token ${localStorage.getItem('userkey')}`}
+const goReview = function() { 
+  axios ({
+    method:'post',
+    url:`http://127.0.0.1:8000/movies/${movie.value.id}/create_review/`,
+    headers: {Authorization: `Token ${userkey}`},
+    data:{
+      title:reviewtitle.value,
+      content:reviewcontent.value
+    }
     })
     .then((response) => {
-      console.log(response.data)
-      movie.value = response.data
+      console.log(response)
     })
     .catch((error) => {
       console.log(error)
     })
+    reviewtitle.value =''
+    reviewcontent.value =''
+    
+    getReview()
+}
+
+const deleteRiview = function(reviewpk){
+  axios ({
+    method:'delete',
+    url:`http://127.0.0.1:8000/movies/${movie.value.id}/${reviewpk}/delete_review/`,
+    headers: {Authorization: `Token ${userkey}`},
+    data:{
+      title:reviewtitle.value,
+      content:reviewcontent.value
+    }
+    })
+    .then((response) => {
+      console.log(response)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+    reviewtitle.value =''
+    reviewcontent.value =''
+    
+    getReview()
 }
 
 onMounted(async () => {
   await getMovies()
+
+  await getReview()
 })
 </script>
 

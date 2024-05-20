@@ -49,7 +49,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     class UserSerializer(serializers.ModelSerializer):
         class Meta:
             model = User
-            fields = ('pk', 'nickname', 'profile_pic')
+            fields = ('pk', 'username', 'profile_pic')
 
     user = UserSerializer(read_only=True)
 
