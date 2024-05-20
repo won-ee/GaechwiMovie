@@ -246,7 +246,6 @@ def similar_like_movie(request, user_pk):
                 idx.append(i)
                 break
     # words 담기
-    print(movies_serializer.data)
     xMovie = [data.get('words') for data in movies_serializer.data]
     # 유사 영화 pk 반환
     result = recommend_movies_names(xMovie, idx, movies_serializer)
@@ -293,6 +292,44 @@ def similar_dislike_movie(request, user_pk):
     final_serializer = UserChoiceSimilarMovieSerializer(final_movie, many=True)
 
     return Response(final_serializer.data)
+
+# 싫어요한 영화는 제외하고 좋아요한 영화와 비슷한 영화들 추천
+def recommend_movies_names_exclude_disliked(xMovie, like_idx, dislike_idx, movies):
+    # None값과 빈 문자열을 제거
+    xMovie = [text for text in xMovie if text is not None and text.strip() != '']
+    # 유효한 데이터가 있는 지 확인
+    if not xMovie:
+        return []
+    # 불용어 제거
+    countVec = CountVectorizer(max_features=10000, stop_words='english')
+
+    # 영화 키워드 벡터라이징
+    dataVectors = countVec.fit_transform(xMovie).toarray()
+
+    # 코사인 유사도
+    similarity = cosine_similarity(dataVectors)
+    
+    # 유사도 내림차순 5개 영화의 인덱스
+    idx_collection = []
+    for i in like_idx:
+        distances = similarity[i]
+        listofMovies = sorted(list(enumerate(distances)), reverse=True, key=lambda x:x[1])[1:7]
+        idx_collection.extend(listofMovies)
+    
+    # 싫어하는 영화와 유사한 영화 제거
+    disliked_movie_set = set()
+    for i in dislike_idx:
+        distances = similarity[i]
+        listofDislikedMovies = sorted(list(enumerate(distances)), reverse=True, key=lambda x:x[1])[1:7]
+        disliked_movie_set.update([idx[0] for idx in listofDislikedMovies])
+    
+    # 인덱스를 pk로 바꾸기, 싫어하는 영화 제외
+    pk_collection = []
+    for idx in idx_collection:
+        if idx[0] not in disliked_movie_set:
+            pk_collection.append(movies.data[idx[0]]['pk'])
+
+    return pk_collection
 
 # 좋아요한 영화에서 싫어요한 영화 제외해서 보여주기
 @api_view(['GET'])
