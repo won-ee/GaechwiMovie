@@ -7,8 +7,13 @@ urlpatterns = [
     # 영화 정보
     path('', views.movie_list),
     path('<int:movie_pk>/', views.movie_detail),
-    path('<str:movie_name>/', views.search_movie),
     path('random', views.movie_random),
+    path('<int:movie_pk>/like', views.like_movie),
+    path('<int:movie_pk>/dislike', views.dislike_movie),
+    path('<int:user_pk>/user_like_movie', views.user_like_movie),
+    path('<int:user_pk>/user_dislike_movie', views.user_dislike_movie),
+    path('<int:user_pk>/user_filtered_movie', views.user_filtered_movie_recommendations),
+    path('<str:movie_name>/', views.search_movie),
 
     # 리뷰
     path('<int:movie_pk>/reviews/', views.reviews),

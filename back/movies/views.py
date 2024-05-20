@@ -42,7 +42,7 @@ def movie_list(request):
 
 # 모든 영화 싫어요 순
 @api_view(['GET'])
-def movie_Low_list(request):
+def movie_Worst_list(request):
     if request.method == 'GET':
         movies = Movie.objects.filter(vote_count__gte=10000).order_by('vote_average')
         paginator = Paginator(movies, 50)
@@ -136,7 +136,7 @@ def like_movie(request, movie_pk):
     
 # 영화 싫어요
 @api_view(['POST'])
-def like_movie(request, movie_pk):
+def dislike_movie(request, movie_pk):
     user = request.user
     movie = get_object_or_404(Movie, pk=movie_pk)
     if movie.dislike_users.filter(pk=user.pk).exists():
