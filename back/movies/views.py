@@ -56,7 +56,7 @@ def movie_Low_list(request):
 # 랜덤 영화
 @api_view(['GET'])
 def movie_random(request):
-    movies = Movie.objects.all()
+    movies = Movie.objects.filter(vote_count__gte=5000)
     random_movies = random.sample(list(movies), 1)
     
     serializer = MovieSerializer(random_movies, many=True)

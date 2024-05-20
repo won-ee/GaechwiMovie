@@ -54,7 +54,6 @@ const fetchData = function(){
       url:`http://127.0.0.1:8000/movies/${keyword.value}/`,
     })
     .then((response) => {
-      console.log(response);
       movies.value = response.data
     })
     .catch((error) => {
@@ -68,7 +67,6 @@ const fetchData = function(){
       url:`http://127.0.0.1:8000/movies/actors/${keyword.value}/`,
     })
     .then((response) => {
-      console.log(response.data);
       actors.value = response.data
     })
     .catch((error) => {

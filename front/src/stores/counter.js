@@ -5,10 +5,11 @@ import axios from 'axios'
 
 export const useMovieStore = defineStore('movie', () => {
   const MovieList = ref([])
+  const WorstMovieList = ref([])
   const userkey = ref(null)
   const isLogin = ref(false)
   const router = useRouter()
-  const test = ref(null)
+
   const getMovies = function() {
     return axios({
       method: 'get',
@@ -21,7 +22,20 @@ export const useMovieStore = defineStore('movie', () => {
       console.log(error)
     })
   }
-
+  
+  const getWorstMovies = function() {
+    return axios({
+      method: 'get',
+      url: 'http://127.0.0.1:8000/movies/worstmovie/',
+    })
+    .then((response) => {
+      WorstMovieList.value = response.data
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
+  
   const Login = function(payload) {
     const { username, password } = payload
     return axios({
@@ -32,9 +46,11 @@ export const useMovieStore = defineStore('movie', () => {
       }
     })
     .then((response) => {
+      console.log(response.data)
       userkey.value = response.data
       isLogin.value = true
-      localStorage.setItem('userkey', JSON.stringify(response.data))
+      console.log(response.data);
+      localStorage.setItem('userkey', response.data.key)
       localStorage.setItem('isLogin', 'true')
       router.push({ name: 'main' })
     })
@@ -50,7 +66,7 @@ export const useMovieStore = defineStore('movie', () => {
     localStorage.removeItem('isLogin')
   }
 
-  return { MovieList, getMovies, userkey, Login, isLogin, logOut }
+  return { MovieList, getMovies, userkey, Login, isLogin, logOut,getWorstMovies,WorstMovieList}
 }, {
-  persist: true // 이 줄을 추가하여 상태를 로컬 스토리지에 저장하고 복원합니다.
+  persist: true 
 })
