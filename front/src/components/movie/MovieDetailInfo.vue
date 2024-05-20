@@ -43,17 +43,26 @@
       </div>
     </div>
   </div>
-  <div>
-      <p>review title : <input type="text" style="color: #000;" v-model="reviewtitle"></p>
-      <br>
-      <p>review content : <input type="text" style="color: #000;" v-model="reviewcontent"></p>
-      <input type="submit" value="리뷰쓰기" style="color: #000;" @click="goReview">
+  <div class="input-wrapper" @click="promptReview()">
+  <div class="block">
+    <p>
+      <span><span class="purple">input</span> <span class="white">( Review )</span></span>
+    </p>
   </div>
-    <div v-for="review in reviewlist">
-        <p v-if="review.title" :id="review.pk" >{{ review.title }}<button  style="color: #000;" @click="deleteRiview(review.pk)">삭제</button> </p>
-        <p v-if="review.content" :id="review.pk">{{ review.content }}<button  style="color: #000;" @click="deleteRiview(review.pk)">삭제</button></p>
-    </div>
+</div>
 
+  <div class="wrapper">
+  <div class="block" v-for="review in reviewlist" :key="review.pk" >
+    <p>
+      <span><span class="purple">class</span> <span class="white">{{review.user.username  }} {</span></span>
+      <span class="inline gray">// Review</span>
+        <span class="inline green">title<span class="white">:</span> <span class="orange">{{ review.title }}</span></span>
+        <span class="inline green">content<span class="white">:</span> <span class="yellow">{{ review.content }}</span></span>
+      <span>};</span>
+      <span class="bottom"><span class="red" @click="deleteReview(review.pk)">delete</span><span class="white">();</span></span>
+    </p>
+  </div>
+</div>
 
 
 </template>
@@ -67,8 +76,6 @@ const route = useRoute()
 const router = useRouter()
 const movie = ref([])
 const reviewlist = ref([])
-const reviewtitle=ref('')
-const reviewcontent=ref('')
 const userkey = localStorage.getItem('userkey')
 
 const getMovies = async () => {
@@ -91,7 +98,45 @@ const getImageUrl = (path) => {
   return `https://image.tmdb.org/t/p/w500${path}`
 }
 
+const promptReview = function() {
+  const title = prompt("리뷰 제목을 입력하세요:");
+  if (title) {
+    const content = prompt("리뷰 내용을 입력하세요:");
+    if (content) {
+      axios({
+        method: 'post',
+        url: `http://127.0.0.1:8000/movies/${movie.value.id}/create_review/`,
+        headers: { Authorization: `Token ${userkey}` },
+        data: {
+          title: title,
+          content: content
+        }
+      })
+      .then((response) => {
+        console.log(response)
+        getReview()
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    }
+  }
+}
 
+const deleteReview = function(reviewpk){
+  axios ({
+    method:'delete',
+    url:`http://127.0.0.1:8000/movies/${movie.value.id}/${reviewpk}/delete_review/`,
+    headers: {Authorization: `Token ${userkey}`}
+    })
+    .then((response) => {
+      console.log(response)
+      getReview()
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
 const getReview = async ()=> {
   return axios({
     method: 'get',
@@ -103,50 +148,6 @@ const getReview = async ()=> {
     .catch((error) => {
       console.log(error)
     })
-}
-
-const goReview = function() { 
-  axios ({
-    method:'post',
-    url:`http://127.0.0.1:8000/movies/${movie.value.id}/create_review/`,
-    headers: {Authorization: `Token ${userkey}`},
-    data:{
-      title:reviewtitle.value,
-      content:reviewcontent.value
-    }
-    })
-    .then((response) => {
-      console.log(response)
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-    reviewtitle.value =''
-    reviewcontent.value =''
-    
-    getReview()
-}
-
-const deleteRiview = function(reviewpk){
-  axios ({
-    method:'delete',
-    url:`http://127.0.0.1:8000/movies/${movie.value.id}/${reviewpk}/delete_review/`,
-    headers: {Authorization: `Token ${userkey}`},
-    data:{
-      title:reviewtitle.value,
-      content:reviewcontent.value
-    }
-    })
-    .then((response) => {
-      console.log(response)
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-    reviewtitle.value =''
-    reviewcontent.value =''
-    
-    getReview()
 }
 
 const likemovie =function(){
@@ -289,4 +290,79 @@ onMounted(async () => {
   width:100%;
   transition:800ms ease all;
 }
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  margin:10px 10px 10px 100px ;
+}
+.wrapper {
+  display: flex;
+  align-items: center;
+  margin:0 100px ;
+}
+.block {
+  margin: 10px;
+  background-color: #011627;;
+  box-shadow: 0 10px 25px 0 rgba(109, 106, 106, 0.4);
+  color: #d6deeb;
+  border-radius: 25px;
+  transition: transform .3s cubic-bezier(.175,.885,.32,1.275),-webkit-transform .3s cubic-bezier(.175,.885,.32,1.275);
+}
+.block:hover {
+  transform: scale(1.05, 1.05);
+}
+.block p {
+  margin: 2em;
+}
+.block p span {
+  display: block;
+}
+.inline {
+  margin-left: 1em;
+}
+.green {
+  color: #7fdbca;
+}
+.gray {
+  display: inline-block;
+  color: #aeb1b8;
+}
+.block p span .white {
+  display: inline-block;
+  color: #d6deeb;
+}
+.block p span .purple {
+  display: inline-block;
+  color:#c792ea;
+}
+.block p span .yellow {
+  display: inline-block;
+  color:  #ecc48d;
+}
+.block p span .orange {
+  display: inline-block;
+  color:  #f78c6c;
+}
+.block p span .red {
+  display: inline-block;
+  color: #ff5874;
+}
+.block p span .purple {
+  display: inline-block;
+  color: #c792ea;
+  font-style: italic;
+}
+.block p span .ani {
+  display: inline-block;
+  color: #d6deeb;
+  animation: ani 1s linear infinite;
+}
+.bottom {
+  margin-top: 1em;
+}
+::selection {
+  color: #f5f5f5;
+  background: #ff5874;
+}
+
 </style>

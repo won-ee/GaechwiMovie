@@ -59,7 +59,7 @@ const fetchData = function(){
   }
 
 const likemovie =function(){
-  console.log(movie.value[0].id);
+  // console.log(movie.value[0].id);
   axios({
       method:'post',
       url:`http://127.0.0.1:8000/movies/${movie.value[0].id}/like`,
@@ -83,7 +83,7 @@ const dislikemovie =function(){
       headers: {Authorization: `Token ${localStorage.getItem('userkey')}`}
     })
     .then((response) => {
-      console.log(response.data)
+      // console.log(response.data)
       movie.value = response.data
     })
     .catch((error) => {

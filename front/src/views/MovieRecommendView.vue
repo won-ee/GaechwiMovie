@@ -6,9 +6,6 @@
       <span>{{movie.title}}</span>
     </div>
   </div>
-
-  
- 
 </template>
 
 <script setup>
@@ -24,7 +21,7 @@ const fetchData = async()=>{
       url:`http://127.0.0.1:8000/movies/${userid}/user_filtered_movie`,
     })
     .then((response) => {
-      console.log(response.data)
+      // console.log(response.data)
       movielist.value = response.data
     })
     .catch((error) => {
