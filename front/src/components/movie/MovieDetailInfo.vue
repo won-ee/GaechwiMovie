@@ -11,7 +11,11 @@
             class="mt-2 movie-poster-image img-fluid"
             :src="getImageUrl(movie.poster_image)"
           />
-          <div @click="router.push({name:'review',params:{'moiveId':movie.id}})"><button style="color: black;">리뷰 게시판</button></div>
+          <div @click="router.push({name:'review',params:{'moiveId':movie.id}})">
+            <button class="createeReview" type="submit" form="message">
+              Create Review
+            </button>
+          </div>
         </div>
       </div>
       <div class="col-md-8">
@@ -146,6 +150,33 @@ const dislikemovie =function(){
     })
     fetchData()
 }
+const deleteReview = function(reviewpk){
+  axios({
+    method: 'delete',
+    url: `http://127.0.0.1:8000/movies/${movie.value.id}/${reviewpk}/delete_review/`,
+    headers: { Authorization: `Token ${userkey}` }
+  })
+  .then((response) => {
+    console.log(response)
+    getReview()
+  })
+  .catch((error) => {
+    console.log(error)
+  })
+}
+
+const getReview = async () => {
+  return axios({
+    method: 'get',
+    url: `http://127.0.0.1:8000/movies/${movie.value.id}/reviews`,
+  })
+  .then((response) => {
+    reviewlist.value = response.data
+  })
+  .catch((error) => {
+    console.log(error)
+  })
+}
 
 onMounted(async () => {
   await getMovies()
@@ -250,5 +281,13 @@ onMounted(async () => {
   width:100%;
   transition:800ms ease all;
 }
-
+.createeReview {
+  width: 300px;
+  height: 60px;
+  margin-top: 80px;
+  border: 0px;
+  background-color: rgba(255,255,255,.2);
+  border-radius: 12px;
+  color: white !important;
+}
 </style>
