@@ -34,14 +34,18 @@
 
         </div>
         <div class="movie-overview mt-3">{{ movie.overview }}</div>
-        <img class="actor-image img-fluid" :src="getImageUrl(movie.director)" />
+        <div>Director</div>
+        <img class="director-image img-fluid" :src="getImageUrl(director.profile_image)" />
+        {{ director.birth_date }} / {{director.gender }} / {{director.nationality }} 
+        <div>{{ director.name }}</div>
+        <div>Actor</div>
         <div class="row actors-wrapper mt-3">
           <div
             class="actor col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-3"
             v-for="actor in movie.actors"
             :key="actor.id"
           >
-            <img class="actor-image img-fluid" :src="getImageUrl(actor.profile_image)" @click="router.push({name:'actordetail',params:{'actorId':actor.pk}})" />
+            <img class="actor-image img-fluid" :src="getImageUrl(actor.profile_image)" @click="router.push({name:'actordetail',params:{'actorId':actor.id}})" />
             <div>{{ actor.name }}</div>
           </div>
         </div>
@@ -115,7 +119,7 @@ const getDirector = async (pk) => {
   })
     .then((response) => {
       director.value = response.data
-      console.log(response.data)
+
     })
     .catch((error) => {
       console.log(error)
@@ -247,6 +251,9 @@ onMounted(async () => {
   opacity: 0.8;
   content: "";
   display: block;
+}
+.director-image{
+  width: 20%;
 }
 .movie-content {
   position: relative;

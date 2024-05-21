@@ -1,7 +1,9 @@
 <template>
-  <h2>{{ actor.name }}</h2>
-  <img class="actor-image" :src="getImageUrl(actor.profile_image)"/>
-  
+  <div class="actor">
+    <h2>{{ actor.name }}</h2>
+    <img class="actor-image" :src="getImageUrl(actor.profile_image)"/>
+    {{ actor.birth_date }} / {{actor.gender }} / {{actor.nationality }} 
+  </div>
 
   <div class="container">
     <div class="movie-list-container">

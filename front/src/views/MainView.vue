@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="movie-list-container">
-      <h1 class="movie-list-title">Best</h1>
+      <h1 class="movie-list-title">Best Movie</h1>
       <div class="movie-list-wrapper">
         <div class="movie-list">
           <MovieCard
@@ -14,7 +14,7 @@
         <i class="fas fa-chevron-right arrow" ></i>
       </div>
 
-      <h1 class="movie-list-title">Worst</h1>
+      <h1 class="movie-list-title">Worst Movie</h1>
       <div class="worst-movie-list-wrapper">
         <div class="worst-movie-list">
           <MovieCard

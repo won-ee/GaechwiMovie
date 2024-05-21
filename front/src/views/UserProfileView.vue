@@ -27,7 +27,7 @@
             <div class="profile-page-item" v-for="movie in movielist" :key="movie.pk">
               <img 
                 class="profile-page-item-image"
-                :src="getImageUrl(movie.poster_path)"
+                :src="getImageUrl(movie.poster_image)"
                 alt="..."
                 @click="goToMovieDetail(movie.pk)"
               />
@@ -45,7 +45,7 @@
             <div class="profile-page-item" v-for="movie in worstlist" :key="movie.pk">
               <img 
                 class="profile-page-item-image"
-                :src="getImageUrl(movie.poster_path)"
+                :src="getImageUrl(movie.poster_image)"
                 alt="..."
                 @click="goToMovieDetail(movie.pk)"
               />
