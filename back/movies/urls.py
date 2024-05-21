@@ -13,8 +13,8 @@ urlpatterns = [
     path('<int:movie_pk>/dislike', views.dislike_movie),
     path('<int:user_pk>/user_like_movie', views.user_like_movie),
     path('<int:user_pk>/user_dislike_movie', views.user_dislike_movie),
-    path('<int:user_pk>/user_filtered_movie', views.user_filtered_movie),
-    path('<int:user_pk>/similar_like_movie', views.similar_like_movie),
+    # path('<int:user_pk>/user_filtered_movie', views.user_filtered_movie),
+    # path('<int:user_pk>/similar_like_movie', views.similar_like_movie),
     path('<str:movie_name>/', views.search_movie),
 
     # 리뷰

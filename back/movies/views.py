@@ -154,8 +154,8 @@ def dislike_movie(request, movie_pk):
 def search1(lst, keyword):
     fetch_data = []
     for data in lst:
-        tmp = {'pk': 0, 'title': '', 'poster_path':'', 'similarity':''}
-        tmp['pk'] = data['pk']; tmp['title'] = data['title']; tmp['poster_path'] = data['poster_path']
+        tmp = {'pk': 0, 'title': '', 'poster_image':'', 'similarity':''}
+        tmp['pk'] = data['pk']; tmp['title'] = data['title']; tmp['poster_image'] = data['poster_image']
         tmp['similarity'] = jaro_winkler_similarity(keyword, data['title'])
         fetch_data.append(tmp)
     fetch_data.sort(key=lambda x : -x['similarity'])
@@ -165,8 +165,8 @@ def search1(lst, keyword):
 def search2(lst, keyword):
     fetch_data = []
     for data in lst:
-        tmp = {'pk': 0, 'name': '', 'profile_path':'', 'similarity':''}
-        tmp['pk'] = data['pk']; tmp['name'] = data['name']; tmp['profile_path'] = data['profile_path']
+        tmp = {'pk': 0, 'name': '', 'profile_image':'', 'similarity':''}
+        tmp['pk'] = data['pk']; tmp['name'] = data['name']; tmp['profile_image'] = data['profile_image']
         tmp['similarity'] = jaro_winkler_similarity(keyword, data['name'])
         fetch_data.append(tmp)
     fetch_data.sort(key=lambda x : -x['similarity'])
@@ -187,6 +187,24 @@ def search_actors(request, actor_name):
     serializer = ActorSearchSerializer(actors, many=True)
     serializer = search2(serializer.data, actor_name)
     return Response(serializer[:6])
+
+# 좋아요 누른 영화 리스트
+@api_view(['GET'])
+def user_like_movie(request, user_pk):
+    user = get_object_or_404(User, pk=user_pk)
+    serializer = UserLikeMovieListSerializer(user)
+
+    return Response(serializer.data)
+
+# 싫어요 누른 영화 리스트
+@api_view(['GET'])
+def user_dislike_movie(request, user_pk):
+    user = get_object_or_404(User, pk=user_pk)
+    serializer = UserDislikeMovieListSerializer(user)
+
+    return Response(serializer.data)
+
+
 
 # 추천 알고리즘
 def recommend_movies_names(xMovie, idx, movies):
@@ -218,160 +236,144 @@ def recommend_movies_names(xMovie, idx, movies):
 
     return pk_collection
 
-# 좋아요 누른 영화 리스트
-@api_view(['GET'])
-def user_like_movie(request, user_pk):
-    user = get_object_or_404(User, pk=user_pk)
-    serializer = UserLikeMovieListSerializer(user)
-
-    return Response(serializer.data)
-
-# 좋아요 한 영화와 비슷한 영화 보기
-@api_view(['GET'])
-def similar_like_movie(request, user_pk):
-    user = get_object_or_404(User, pk=user_pk)
-    serializer = UserLikeMovieListSerializer(user)
-    movies = get_list_or_404(Movie)
-    movies_serializer = MovieListSerializer(movies, many=True)
+# # 좋아요 한 영화와 비슷한 영화 보기
+# @api_view(['GET'])
+# def similar_like_movie(request, user_pk):
+#     user = get_object_or_404(User, pk=user_pk)
+#     serializer = UserLikeMovieListSerializer(user)
+#     movies = get_list_or_404(Movie)
+#     movies_serializer = MovieListSerializer(movies, many=True)
     
 
-    # user가 좋아요한 영화 key값 담기
-    movie_key = [data['pk'] for data in serializer.data.get('like_movies')]
+#     # user가 좋아요한 영화 key값 담기
+#     movie_key = [data['pk'] for data in serializer.data.get('like_movies')]
 
-    # user가 좋아요 한 영화 index 담기
-    idx = []
-    for key in movie_key:
-        for i in range(len(movies_serializer.data)):
-            if key == movies_serializer.data[i]['pk']:
-                idx.append(i)
-                break
-    # words 담기
-    xMovie = [data.get('words') for data in movies_serializer.data]
-    # 유사 영화 pk 반환
-    result = recommend_movies_names(xMovie, idx, movies_serializer)
-    # 유사 영화 pk 기반 querySet 생성
-    final_movie = [get_object_or_404(Movie, pk=i) for i in result]
-    final_serializer = UserChoiceSimilarMovieSerializer(final_movie, many=True)
+#     # user가 좋아요 한 영화 index 담기
+#     idx = []
+#     for key in movie_key:
+#         for i in range(len(movies_serializer.data)):
+#             if key == movies_serializer.data[i]['pk']:
+#                 idx.append(i)
+#                 break
+#     # words 담기
+#     xMovie = [data.get('words') for data in movies_serializer.data]
+#     # 유사 영화 pk 반환
+#     result = recommend_movies_names(xMovie, idx, movies_serializer)
+#     # 유사 영화 pk 기반 querySet 생성
+#     final_movie = [get_object_or_404(Movie, pk=i) for i in result]
+#     final_serializer = UserChoiceSimilarMovieSerializer(final_movie, many=True)
 
-    return Response(final_serializer.data)
+#     return Response(final_serializer.data)
 
-# 싫어요 누른 영화 리스트
-@api_view(['GET'])
-def user_dislike_movie(request, user_pk):
-    user = get_object_or_404(User, pk=user_pk)
-    serializer = UserDislikeMovieListSerializer(user)
-
-    return Response(serializer.data)
-
-# 싫어요 한 영화와 비슷한 영화 보기
-@api_view(['GET'])
-def similar_dislike_movie(request, user_pk):
-    user = get_object_or_404(User, pk=user_pk)
-    serializer = UserDislikeMovieListSerializer(user)
-    movies = get_list_or_404(Movie)
-    movies_serializer = MovieListSerializer(movies, many=True)
+# # 싫어요 한 영화와 비슷한 영화 보기
+# @api_view(['GET'])
+# def similar_dislike_movie(request, user_pk):
+#     user = get_object_or_404(User, pk=user_pk)
+#     serializer = UserDislikeMovieListSerializer(user)
+#     movies = get_list_or_404(Movie)
+#     movies_serializer = MovieListSerializer(movies, many=True)
     
-    # user가 싫어여한 영화 key값 담기
-    movie_key = [data['pk'] for data in serializer.data.get('dislike_movies')]
+#     # user가 싫어여한 영화 key값 담기
+#     movie_key = [data['pk'] for data in serializer.data.get('dislike_movies')]
 
-    # user가 싫어요 한 영화 index 담기
-    idx = []
-    for key in movie_key:
-        for i in range(len(movies_serializer.data)):
-            if key == movies_serializer.data[i]['pk']:
-                idx.append(i)
-                break
-    # words 담기
-    xMovie = [data.get('words') for data in movies_serializer.data]
+#     # user가 싫어요 한 영화 index 담기
+#     idx = []
+#     for key in movie_key:
+#         for i in range(len(movies_serializer.data)):
+#             if key == movies_serializer.data[i]['pk']:
+#                 idx.append(i)
+#                 break
+#     # words 담기
+#     xMovie = [data.get('words') for data in movies_serializer.data]
 
-    # 유사 영화 pk 반환
-    result = recommend_movies_names(xMovie, idx, movies_serializer)
+#     # 유사 영화 pk 반환
+#     result = recommend_movies_names(xMovie, idx, movies_serializer)
 
-    # 유사 영화 pk 기반 querySet 생성
-    final_movie = [get_object_or_404(Movie, pk=i) for i in result]
-    final_serializer = UserChoiceSimilarMovieSerializer(final_movie, many=True)
+#     # 유사 영화 pk 기반 querySet 생성
+#     final_movie = [get_object_or_404(Movie, pk=i) for i in result]
+#     final_serializer = UserChoiceSimilarMovieSerializer(final_movie, many=True)
 
-    return Response(final_serializer.data)
+#     return Response(final_serializer.data)
 
-# 싫어요한 영화는 제외하고 좋아요한 영화와 비슷한 영화들 추천
-def recommend_movies_names_exclude_disliked(xMovie, like_idx, dislike_idx, movies):
-    # None값과 빈 문자열을 제거
-    xMovie = [text for text in xMovie if text is not None and text.strip() != '']
-    # 유효한 데이터가 있는 지 확인
-    if not xMovie:
-        return []
-    # 불용어 제거
-    countVec = CountVectorizer(max_features=10000, stop_words='english')
+# # 싫어요한 영화는 제외하고 좋아요한 영화와 비슷한 영화들 추천
+# def recommend_movies_names_exclude_disliked(xMovie, like_idx, dislike_idx, movies):
+#     # None값과 빈 문자열을 제거
+#     xMovie = [text for text in xMovie if text is not None and text.strip() != '']
+#     # 유효한 데이터가 있는 지 확인
+#     if not xMovie:
+#         return []
+#     # 불용어 제거
+#     countVec = CountVectorizer(max_features=10000, stop_words='english')
 
-    # 영화 키워드 벡터라이징
-    dataVectors = countVec.fit_transform(xMovie).toarray()
+#     # 영화 키워드 벡터라이징
+#     dataVectors = countVec.fit_transform(xMovie).toarray()
 
-    # 코사인 유사도
-    similarity = cosine_similarity(dataVectors)
+#     # 코사인 유사도
+#     similarity = cosine_similarity(dataVectors)
     
-    # 유사도 내림차순 5개 영화의 인덱스
-    idx_collection = []
-    for i in like_idx:
-        distances = similarity[i]
-        listofMovies = sorted(list(enumerate(distances)), reverse=True, key=lambda x:x[1])[1:7]
-        idx_collection.extend(listofMovies)
+#     # 유사도 내림차순 5개 영화의 인덱스
+#     idx_collection = []
+#     for i in like_idx:
+#         distances = similarity[i]
+#         listofMovies = sorted(list(enumerate(distances)), reverse=True, key=lambda x:x[1])[1:7]
+#         idx_collection.extend(listofMovies)
     
-    # 싫어하는 영화와 유사한 영화 제거
-    disliked_movie_set = set()
-    for i in dislike_idx:
-        distances = similarity[i]
-        listofDislikedMovies = sorted(list(enumerate(distances)), reverse=True, key=lambda x:x[1])[1:7]
-        disliked_movie_set.update([idx[0] for idx in listofDislikedMovies])
+#     # 싫어하는 영화와 유사한 영화 제거
+#     disliked_movie_set = set()
+#     for i in dislike_idx:
+#         distances = similarity[i]
+#         listofDislikedMovies = sorted(list(enumerate(distances)), reverse=True, key=lambda x:x[1])[1:7]
+#         disliked_movie_set.update([idx[0] for idx in listofDislikedMovies])
     
-    # 인덱스를 pk로 바꾸기, 싫어하는 영화 제외
-    pk_collection = []
-    for idx in idx_collection:
-        if idx[0] not in disliked_movie_set:
-            pk_collection.append(movies.data[idx[0]]['pk'])
+#     # 인덱스를 pk로 바꾸기, 싫어하는 영화 제외
+#     pk_collection = []
+#     for idx in idx_collection:
+#         if idx[0] not in disliked_movie_set:
+#             pk_collection.append(movies.data[idx[0]]['pk'])
 
-    return pk_collection
+#     return pk_collection
 
-# 좋아요한 영화에서 싫어요한 영화 제외해서 보여주기
-@api_view(['GET'])
-def user_filtered_movie(request, user_pk):
-    user = get_object_or_404(User, pk=user_pk)
+# # 좋아요한 영화에서 싫어요한 영화 제외해서 보여주기
+# @api_view(['GET'])
+# def user_filtered_movie(request, user_pk):
+#     user = get_object_or_404(User, pk=user_pk)
     
-    # 좋아요 한 영화
-    like_serializer = UserLikeMovieListSerializer(user)
-    like_movies = [data['pk'] for data in like_serializer.data.get('like_movies')]
+#     # 좋아요 한 영화
+#     like_serializer = UserLikeMovieListSerializer(user)
+#     like_movies = [data['pk'] for data in like_serializer.data.get('like_movies')]
 
-    # 싫어요 한 영화
-    dislike_serializer = UserDislikeMovieListSerializer(user)
-    dislike_movies = [data['pk'] for data in dislike_serializer.data.get('dislike_movies')]
+#     # 싫어요 한 영화
+#     dislike_serializer = UserDislikeMovieListSerializer(user)
+#     dislike_movies = [data['pk'] for data in dislike_serializer.data.get('dislike_movies')]
 
-    # 모든 영화 데이터 가져오기
-    movies = get_list_or_404(Movie)
-    movies_serializer = MovieListSerializer(movies, many=True)
+#     # 모든 영화 데이터 가져오기
+#     movies = get_list_or_404(Movie)
+#     movies_serializer = MovieListSerializer(movies, many=True)
 
-    # 좋아요 한 영화 index 담기
-    like_idx = []
-    for key in like_movies:
-        for i in range(len(movies_serializer.data)):
-            if key == movies_serializer.data[i]['pk']:
-                like_idx.append(i)
-                break
+#     # 좋아요 한 영화 index 담기
+#     like_idx = []
+#     for key in like_movies:
+#         for i in range(len(movies_serializer.data)):
+#             if key == movies_serializer.data[i]['pk']:
+#                 like_idx.append(i)
+#                 break
 
-    # 싫어요 한 영화 index 담기
-    dislike_idx = []
-    for key in dislike_movies:
-        for i in range(len(movies_serializer.data)):
-            if key == movies_serializer.data[i]['pk']:
-                dislike_idx.append(i)
-                break
+#     # 싫어요 한 영화 index 담기
+#     dislike_idx = []
+#     for key in dislike_movies:
+#         for i in range(len(movies_serializer.data)):
+#             if key == movies_serializer.data[i]['pk']:
+#                 dislike_idx.append(i)
+#                 break
 
-    # words 담기
-    xMovie = [data.get('words') for data in movies_serializer.data]
+#     # words 담기
+#     xMovie = [data.get('words') for data in movies_serializer.data]
 
-    # 유사 영화 pk 반환 (싫어하는 영화 유사 영화 제외)
-    result = recommend_movies_names_exclude_disliked(xMovie, like_idx, dislike_idx, movies_serializer)
+#     # 유사 영화 pk 반환 (싫어하는 영화 유사 영화 제외)
+#     result = recommend_movies_names_exclude_disliked(xMovie, like_idx, dislike_idx, movies_serializer)
 
-    # 유사 영화 pk 기반 querySet 생성
-    final_movie = [get_object_or_404(Movie, pk=i) for i in result]
-    final_serializer = UserChoiceSimilarMovieSerializer(final_movie, many=True)
+#     # 유사 영화 pk 기반 querySet 생성
+#     final_movie = [get_object_or_404(Movie, pk=i) for i in result]
+#     final_serializer = UserChoiceSimilarMovieSerializer(final_movie, many=True)
 
-    return Response(final_serializer.data)
+#     return Response(final_serializer.data)

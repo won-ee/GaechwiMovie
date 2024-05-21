@@ -6,12 +6,26 @@ import datetime
 
 class Actor(models.Model):
     name = models.CharField(max_length=50, null=False)
-    profile_path = models.TextField(null=True)
+    profile_image = models.URLField(max_length=255, null=True, blank=True)
+    biography = models.TextField(null=True, blank=True)
+    birth_date = models.DateField(null=True, blank=True)
+    gender = models.CharField(max_length=10, null=True, blank=True)
+    nationality = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.name
 
+class Director(models.Model):
+    name = models.CharField(max_length=255)
+    profile_image = models.URLField(max_length=255, null=True, blank=True)
+    biography = models.TextField(null=True, blank=True)
+    birth_date = models.DateField(null=True, blank=True)
+    gender = models.CharField(max_length=10, null=True, blank=True)
+    nationality = models.CharField(max_length=255, null=True, blank=True)
 
+    def __str__(self):
+        return self.name
+    
 class Genre(models.Model):
     name = models.CharField(max_length=50, null=False)
 
@@ -20,20 +34,19 @@ class Genre(models.Model):
 
 
 class Movie(models.Model):
-    genres = models.ManyToManyField(Genre, related_name='movies')
-    actors = models.ManyToManyField(Actor, related_name='movies')
-    title = models.CharField(max_length=300)
+    title = models.CharField(max_length=255)
     overview = models.TextField()
-    budget = models.BigIntegerField()
+    tagline = models.CharField(max_length=255, null=True, blank=True)
+    poster_image = models.URLField(max_length=255)
+    backdrop_image = models.URLField(max_length=255)
+    director = models.ForeignKey(Director, on_delete=models.CASCADE)
+    actors = models.ManyToManyField(Actor, related_name='movies')
+    genres = models.ManyToManyField(Genre, related_name='movies')
     popularity = models.FloatField()
-    poster_path = models.TextField(null=True)
     release_date = models.DateField(null=True, default=datetime.date.today)
-    revenue = models.BigIntegerField()
     runtime = models.IntegerField(null=True)
-    tagline = models.TextField(null=True)
-    vote_average = models.FloatField(null=True)
-    vote_count = models.IntegerField(null=True)
-    words = models.TextField(null=True)
+    vote_average = models.FloatField()
+    vote_count = models.IntegerField()
     like_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name='like_movies'
     )
