@@ -28,7 +28,7 @@ class MovieSerializer(serializers.ModelSerializer):
     class ActorSerializer(serializers.ModelSerializer):
         class Meta:
             model = Actor
-            fields = ('pk', 'name', 'profile_image')
+            fields = '__all__'
 
     genres = GenreSerializer(read_only=True, many=True)
     actors = ActorSerializer(read_only=True, many=True)
@@ -96,7 +96,7 @@ class ActorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Actor
-        fields = ('name', 'profile_image', 'movies')
+        fields = '__all__'
 
 # 검색한 영화와 비슷한 영화
 class MovieSearchSerializer(serializers.ModelSerializer):

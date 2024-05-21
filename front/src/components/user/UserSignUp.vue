@@ -58,6 +58,7 @@ function SignUp() {
 }
 
 const signUpUser = async (payload) => {
+  console.log(payload);
   try {
     const response = await axios.post("http://127.0.0.1:8000/accounts/signup/", payload);
     if (response.status === 204) {
