@@ -48,6 +48,13 @@ class MovieSerializer(serializers.ModelSerializer):
             'vote_count',
         )
 
+# 키워드
+class KeywordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Keyword
+        fields = ('id', 'name')
+
+# 영화 추찬
 class RecommendedSerializer(serializers.ModelSerializer):
 
     class MovieSerializer(serializers.ModelSerializer):

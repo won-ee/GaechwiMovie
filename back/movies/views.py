@@ -117,24 +117,25 @@ def actor_detail(request, actor_pk):
     return Response(serializer.data)
 
 # 키워드 + 1
-def add_user_keywords(user, movie_pk):
-    movie = get_object_or_404(Movie, pk=movie_pk)
-    keyword_ids = movie.keywords
+def add_user_keywords(user, movie):
+    # keyword_ids = movie.keywords.all() -> id가 아니라 value 반환
+    keyword_ids = movie.keywords.values_list('id', flat=True)
     for keyword_id in keyword_ids:
         keyword, created = Keyword.objects.get_or_create(id=keyword_id)
         user_keyword, created = UserKeyword.objects.get_or_create(user=user, keyword=keyword)
         user_keyword.count += 1
         user_keyword.save()
+    return
 
 # 키워드 - 1
-def remove_user_keywords(user, movie_pk):
-    movie = get_object_or_404(Movie, pk=movie_pk)
-    keyword_ids = movie.keywords
+def remove_user_keywords(user, movie):
+    keyword_ids = movie.keywords.values_list('id', flat=True)
     for keyword_id in keyword_ids:
         keyword, created = Keyword.objects.get_or_create(id=keyword_id)
         user_keyword, created = UserKeyword.objects.get_or_create(user=user, keyword=keyword)
         user_keyword.count -= 1
         user_keyword.save()
+    return
 
 # 영화 좋아요
 @api_view(['POST'])
@@ -143,14 +144,14 @@ def like_movie(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     if movie.like_users.filter(pk=user.pk).exists():
         movie.like_users.remove(user)
-        remove_user_keywords(user, movie_pk)
+        remove_user_keywords(user, movie)
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
     else:
         if movie.dislike_users.filter(pk=user.pk).exists():
             movie.dislike_users.remove(user)
         movie.like_users.add(user)
-        add_user_keywords(user, movie_pk)
+        add_user_keywords(user, movie)
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
     
@@ -161,14 +162,14 @@ def dislike_movie(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     if movie.dislike_users.filter(pk=user.pk).exists():
         movie.dislike_users.remove(user)
-        add_user_keywords(user, movie_pk)
+        add_user_keywords(user, movie)
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
     else:
         if movie.like_users.filter(pk=user.pk).exists():
             movie.like_users.remove(user)
         movie.dislike_users.add(user)
-        remove_user_keywords(user, movie_pk)
+        remove_user_keywords(user, movie)
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
     
@@ -189,7 +190,7 @@ def recommended(request, user_pk):
             )
         )
     ).order_by('-keyword_match_count').distinct()
-    serializer = RecommendedSerializer(recommended_movies, many=True)
+    serializer = MovieSerializer(recommended_movies, many=True)
     
     return Response(serializer.data)
 
