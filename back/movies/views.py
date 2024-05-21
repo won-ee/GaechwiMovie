@@ -150,6 +150,7 @@ def like_movie(request, movie_pk):
     else:
         if movie.dislike_users.filter(pk=user.pk).exists():
             movie.dislike_users.remove(user)
+            add_user_keywords(user, movie)
         movie.like_users.add(user)
         add_user_keywords(user, movie)
         serializer = MovieSerializer(movie)
@@ -168,6 +169,7 @@ def dislike_movie(request, movie_pk):
     else:
         if movie.like_users.filter(pk=user.pk).exists():
             movie.like_users.remove(user)
+            remove_user_keywords(user, movie)
         movie.dislike_users.add(user)
         remove_user_keywords(user, movie)
         serializer = MovieSerializer(movie)
@@ -181,7 +183,9 @@ def recommended(request, user_pk):
     # 사용자 키워드를 기준으로 영화를 필터링
     recommended_movies = Movie.objects.filter(
         keywords__in=user_keywords
-    ).annotate(
+    ).exclude(
+        like_users__id=user_pk
+        ).annotate(
         keyword_match_count=Sum(
             Case(
                 When(keywords__in=user_keywords, then=1),
