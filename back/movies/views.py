@@ -190,7 +190,11 @@ def recommended(request, user_pk):
             )
         )
     ).order_by('-keyword_match_count').distinct()
-    serializer = MovieSerializer(recommended_movies, many=True)
+    paginator = Paginator(recommended_movies, 20)
+
+    page = request.GET.get('page', 1)
+    page_movies = paginator.get_page(page)
+    serializer = MovieSerializer(page_movies, many=True)
     
     return Response(serializer.data)
 
