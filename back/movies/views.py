@@ -17,9 +17,10 @@ from .serializers import (
     UserLikeMovieListSerializer,
     UserDislikeMovieListSerializer,
     UserChoiceSimilarMovieSerializer,
-    ActorSearchSerializer
+    ActorSearchSerializer,
+    DirectorSerializer
 )
-from .models import Movie, Review, Actor
+from .models import Movie, Review, Actor, Director
 from accounts.models import User
 import random
 
@@ -204,7 +205,12 @@ def user_dislike_movie(request, user_pk):
 
     return Response(serializer.data)
 
-
+# 감독 디테일
+@api_view(['GET'])
+def director(request, director_pk):
+    director = get_object_or_404(Director, pk=director_pk)
+    serializer = DirectorSerializer(director)
+    return Response(serializer.data)
 
 # 추천 알고리즘
 def recommend_movies_names(xMovie, idx, movies):

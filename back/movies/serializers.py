@@ -145,3 +145,10 @@ class UserChoiceSimilarMovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = ('title', 'poster_image', 'pk')
+
+# 감독 디테일
+class DirectorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Director
+        fields = '__all__'
