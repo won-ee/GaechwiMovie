@@ -28,4 +28,7 @@ urlpatterns = [
     # 배우
     path('actors/<int:actor_pk>/', views.actor_detail),
     path('actors/<str:actor_name>/', views.search_actors),
+
+    # 감독
+    path('director/<int:director_pk>/', views.director),
 ]
