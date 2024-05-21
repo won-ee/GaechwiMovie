@@ -31,7 +31,21 @@ class Genre(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Keyword(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.name
+
+class UserKeyword(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_keywords')
+    keyword = models.ForeignKey(Keyword, on_delete=models.CASCADE, related_name='user_keywords')
+    count = models.IntegerField(default=0)  # 키워드의 가중치 또는 빈도를 저장
+
+    class Meta:
+        unique_together = ('user', 'keyword')
 
 class Movie(models.Model):
     title = models.CharField(max_length=255)
@@ -42,6 +56,7 @@ class Movie(models.Model):
     director = models.ForeignKey(Director, on_delete=models.CASCADE)
     actors = models.ManyToManyField(Actor, related_name='movies')
     genres = models.ManyToManyField(Genre, related_name='movies')
+    keywords = models.ManyToManyField(Keyword, related_name='movies')
     popularity = models.FloatField()
     release_date = models.DateField(null=True, default=datetime.date.today)
     runtime = models.IntegerField(null=True)
@@ -53,7 +68,6 @@ class Movie(models.Model):
     dislike_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name='dislike_movies'
     )
-
     def __str__(self):
         return self.title
 

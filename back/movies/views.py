@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from django.core.paginator import Paginator
-from django.db.models import Count
+from django.db.models import Count, Sum, Case, When, IntegerField
 from django.shortcuts import get_object_or_404, get_list_or_404
 
 from .serializers import (
@@ -18,9 +18,10 @@ from .serializers import (
     UserDislikeMovieListSerializer,
     UserChoiceSimilarMovieSerializer,
     ActorSearchSerializer,
-    DirectorSerializer
+    DirectorSerializer,
+    RecommendedSerializer,
 )
-from .models import Movie, Review, Actor, Director
+from .models import Movie, Review, Actor, Director, Keyword, UserKeyword
 from accounts.models import User
 import random
 
@@ -71,10 +72,6 @@ def movie_detail(request, movie_pk):
     serializr = MovieSerializer(movie)
     return Response(serializr.data)
 
-@api_view(['GET'])
-def recommended(request):
-    pass
-
 # 리뷰 목록
 @api_view(['GET'])
 def reviews(request, movie_pk):
@@ -119,6 +116,26 @@ def actor_detail(request, actor_pk):
     serializer = ActorSerializer(actor)
     return Response(serializer.data)
 
+# 키워드 + 1
+def add_user_keywords(user, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    keyword_ids = movie.keywords
+    for keyword_id in keyword_ids:
+        keyword, created = Keyword.objects.get_or_create(id=keyword_id)
+        user_keyword, created = UserKeyword.objects.get_or_create(user=user, keyword=keyword)
+        user_keyword.count += 1
+        user_keyword.save()
+
+# 키워드 - 1
+def remove_user_keywords(user, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    keyword_ids = movie.keywords
+    for keyword_id in keyword_ids:
+        keyword, created = Keyword.objects.get_or_create(id=keyword_id)
+        user_keyword, created = UserKeyword.objects.get_or_create(user=user, keyword=keyword)
+        user_keyword.count -= 1
+        user_keyword.save()
+
 # 영화 좋아요
 @api_view(['POST'])
 def like_movie(request, movie_pk):
@@ -126,12 +143,14 @@ def like_movie(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     if movie.like_users.filter(pk=user.pk).exists():
         movie.like_users.remove(user)
+        remove_user_keywords(user, movie_pk)
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
     else:
         if movie.dislike_users.filter(pk=user.pk).exists():
             movie.dislike_users.remove(user)
         movie.like_users.add(user)
+        add_user_keywords(user, movie_pk)
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
     
@@ -142,14 +161,38 @@ def dislike_movie(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     if movie.dislike_users.filter(pk=user.pk).exists():
         movie.dislike_users.remove(user)
+        add_user_keywords(user, movie_pk)
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
     else:
         if movie.like_users.filter(pk=user.pk).exists():
             movie.like_users.remove(user)
         movie.dislike_users.add(user)
+        remove_user_keywords(user, movie_pk)
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
+    
+# 영화 추천 알고리즘
+@api_view(['GET'])
+def recommended(request, user_pk):
+    user_keywords = Keyword.objects.filter(user_keywords__user=user_pk, user_keywords__count__gt=0).annotate(count=Count('user_keywords__count'))
+    
+    # 사용자 키워드를 기준으로 영화를 필터링
+    recommended_movies = Movie.objects.filter(
+        keywords__in=user_keywords
+    ).annotate(
+        keyword_match_count=Sum(
+            Case(
+                When(keywords__in=user_keywords, then=1),
+                default=0,
+                output_field=IntegerField()
+            )
+        )
+    ).order_by('-keyword_match_count').distinct()
+    serializer = RecommendedSerializer(recommended_movies, many=True)
+    
+    return Response(serializer.data)
+
     
 # 편집거리 알고리즘 - 영화
 def search1(lst, keyword):
@@ -212,35 +255,52 @@ def director(request, director_pk):
     serializer = DirectorSerializer(director)
     return Response(serializer.data)
 
-# 추천 알고리즘
-def recommend_movies_names(xMovie, idx, movies):
-    # None값과 빈 문자열을 제거
-    xMovie = [text for text in xMovie if text is not None and text.strip() != '']
-    # 유효한 데이터가 있는 지 확인
-    if not xMovie:
-        return []
-    # 불용어 제거
-    countVec = CountVectorizer(max_features=10000, stop_words='english')
 
-    # 영화 키워드 벡터라이징
-    dataVectors = countVec.fit_transform(xMovie).toarray()
 
-    # 코사인 유사도
-    similarity = cosine_similarity(dataVectors)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # 추천 알고리즘
+# def recommend_movies_names(xMovie, idx, movies):
+#     # None값과 빈 문자열을 제거
+#     xMovie = [text for text in xMovie if text is not None and text.strip() != '']
+#     # 유효한 데이터가 있는 지 확인
+#     if not xMovie:
+#         return []
+#     # 불용어 제거
+#     countVec = CountVectorizer(max_features=10000, stop_words='english')
+
+#     # 영화 키워드 벡터라이징
+#     dataVectors = countVec.fit_transform(xMovie).toarray()
+
+#     # 코사인 유사도
+#     similarity = cosine_similarity(dataVectors)
     
-    # 유사도 내림차순 5개 영화의 인덱스
-    idx_collection = []
-    for i in idx:
-        distances = similarity[i]
-        listofMovies = sorted(list(enumerate(distances)), reverse=True, key=lambda x:x[1])[1:7]
-        idx_collection.extend(listofMovies)
+#     # 유사도 내림차순 5개 영화의 인덱스
+#     idx_collection = []
+#     for i in idx:
+#         distances = similarity[i]
+#         listofMovies = sorted(list(enumerate(distances)), reverse=True, key=lambda x:x[1])[1:7]
+#         idx_collection.extend(listofMovies)
  
-    # 인덱스를 pk로 바꾸기
-    pk_collection = []
-    for idx in idx_collection:
-        pk_collection.append(movies.data[idx[0]]['pk'])
+#     # 인덱스를 pk로 바꾸기
+#     pk_collection = []
+#     for idx in idx_collection:
+#         pk_collection.append(movies.data[idx[0]]['pk'])
 
-    return pk_collection
+#     return pk_collection
 
 # # 좋아요 한 영화와 비슷한 영화 보기
 # @api_view(['GET'])

@@ -23,7 +23,7 @@ urlpatterns = [
     path('<int:movie_pk>/<int:review_pk>/delete_review/', views.delete_review),
 
     # 추천
-    path('recommended/', views.recommended),
+    path('<int:user_pk>/recommended/', views.recommended),
 
     # 배우
     path('actors/<int:actor_pk>/', views.actor_detail),

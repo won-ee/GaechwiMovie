@@ -48,6 +48,13 @@ class MovieSerializer(serializers.ModelSerializer):
             'vote_count',
         )
 
+class RecommendedSerializer(serializers.ModelSerializer):
+
+    class MovieSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Movie
+            field = ('pk', 'title', 'poster_image')
+
 # 리뷰
 class ReviewSerializer(serializers.ModelSerializer):
     class UserSerializer(serializers.ModelSerializer):
