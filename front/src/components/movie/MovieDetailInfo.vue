@@ -1,11 +1,15 @@
 <template>
+  <div class="movie-detail">
+    <div class="movie-detail-image"
+      :style="{ backgroundImage: `url(${getImageUrl(url)})` }">
+    </div>
   <div class="container movie-content">
     <div class="row">
       <div class="col-md-4">
         <div class="movie-poster">
           <img
             class="mt-2 movie-poster-image img-fluid"
-            :src="getImageUrl(movie.poster_path)"
+            :src="getImageUrl(movie.poster_image)"
           />
         </div>
       </div>
@@ -23,35 +27,37 @@
               :key="genre.id"
             >
               {{ genre.name }}
-            </div>
-            <button class="custom-btn btn-5" @click="likemovie"><span>개추💖</span></button>
-            <button class="custom-btn btn-5" @click="dislikemovie"><span>비추💔</span></button>
+            </div> 
+            &nbsp;&nbsp;<button class="custom-btn btn-5" @click="likemovie"><span>개추💖</span></button>
+            &nbsp;<button class="custom-btn btn-5" @click="dislikemovie"><span>비추💔</span></button>
           </div>
 
         </div>
         <div class="movie-overview mt-3">{{ movie.overview }}</div>
+        <img class="actor-image img-fluid" :src="getImageUrl(movie.director)" />
         <div class="row actors-wrapper mt-3">
           <div
             class="actor col-6 col-sm-4 col-md-3 col-lg-2 text-center mb-3"
             v-for="actor in movie.actors"
             :key="actor.id"
           >
-            <img class="actor-image img-fluid" :src="getImageUrl(actor.profile_path)" @click="router.push({name:'actordetail',params:{'actorId':actor.pk}})" />
+            <img class="actor-image img-fluid" :src="getImageUrl(actor.profile_image)" @click="router.push({name:'actordetail',params:{'actorId':actor.pk}})" />
             <div>{{ actor.name }}</div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="input-wrapper" @click="promptReview()">
+  </div>
+
+  <!-- <div class="input-wrapper" @click="promptReview()">
   <div class="block">
     <p>
       <span><span class="purple">input</span> <span class="white">( Review )</span></span>
     </p>
   </div>
 </div>
-
-  <div class="wrapper">
+<div class="wrapper">
   <div class="block" v-for="review in reviewlist" :key="review.pk" >
     <p>
       <span><span class="purple">class</span> <span class="white">{{review.user.username  }} {</span></span>
@@ -62,10 +68,12 @@
       <span class="bottom"><span class="red" @click="deleteReview(review.pk)">delete</span><span class="white">();</span></span>
     </p>
   </div>
-</div>
-
+</div> -->
+  
 
 </template>
+
+
 
 <script setup>
 import { ref, onMounted } from 'vue'
@@ -77,6 +85,12 @@ const router = useRouter()
 const movie = ref([])
 const reviewlist = ref([])
 const userkey = localStorage.getItem('userkey')
+const url = ref([])
+const director = ref([])
+
+const urlname = function (pullurl) {
+  url.value = pullurl.split('/').pop()
+}
 
 const getMovies = async () => {
   return axios({
@@ -85,6 +99,23 @@ const getMovies = async () => {
   })
     .then((response) => {
       movie.value = response.data
+      urlname(response.data.backdrop_image)
+      getDirector(response.data.director)
+      console.log(response.data)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
+
+const getDirector = async (pk) => {
+  return axios({
+    method: 'get',
+    url: `http://127.0.0.1:8000/movies/director/${pk}/`,
+  })
+    .then((response) => {
+      director.value = response.data
+      console.log(response.data)
     })
     .catch((error) => {
       console.log(error)
@@ -95,7 +126,7 @@ const getImageUrl = (path) => {
   if (!path) {
     return
   }
-  return `https://image.tmdb.org/t/p/w500${path}`
+  return `https://image.tmdb.org/t/p/original/${path}`
 }
 
 const promptReview = function() {
@@ -239,16 +270,14 @@ onMounted(async () => {
   font-size: 20px;
 }
 .movie-overview {
-  max-width: 100%;
+  max-width: 60%;
   font-size: 14px;
   color: #dddddddd;
-}
-.homepage-link:hover {
-  opacity: 0.5;
 }
 .actor-image {
   width: 100%;
   height: auto;
+  
 }
 .btn-5 {
   width: 50px;
@@ -256,8 +285,7 @@ onMounted(async () => {
   line-height: 42px;
   padding: 0;
   border: none;
-  background: rgb(255, 255, 255);
-  background: linear-gradient(0deg, rgb(20, 20, 20) 0%, rgb(20, 20, 20) 100%);
+  background: transparent
 }
 .btn-5:hover {
   color: #ffffff;
@@ -273,10 +301,6 @@ onMounted(async () => {
   height:2px;
   width:0;
   background: #ffffff;
-  box-shadow:
-   -1px -1px 5px 0px #fff,
-   7px 7px 20px 0px #0003,
-   4px 4px 5px 0px #0002;
   transition:400ms ease all;
 }
 .btn-5:after{

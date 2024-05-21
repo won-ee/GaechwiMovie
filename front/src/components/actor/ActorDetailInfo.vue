@@ -1,6 +1,6 @@
 <template>
   <h2>{{ actor.name }}</h2>
-  <img class="actor-image" :src="getImageUrl(actor.profile_path)"/>
+  <img class="actor-image" :src="getImageUrl(actor.profile_image)"/>
   
 
   <div class="container">

@@ -5,7 +5,7 @@
       <div class="movie-list-wrapper">
         <div class="movie-list">
           <div  class="movie-list-item" @click="goMovieDetail(movie[0].pk) " >
-            <img class="movie-list-item-img" :src="getImageUrl(movie[0].poster_path)" alt="..."  @click="goMovieDetail(movie[0].id)"/>
+            <img class="movie-list-item-img" :src="getImageUrl(movie[0].poster_image)" alt="..."  @click="goMovieDetail(movie[0].id)"/>
             <span class="movie-list-item-title">{{movie[0].overview}}</span>
           </div>
         </div>

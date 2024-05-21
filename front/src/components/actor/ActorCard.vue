@@ -1,7 +1,7 @@
 <template>
   
   <div  class="actor-list-item" @click="goMovieDetail(actor.pk)" >
-    <img class="actor-list-item-img" :src="getImageUrl(actor.profile_path)" alt="..." />
+    <img class="actor-list-item-img" :src="getImageUrl(actor.profile_image)" alt="..." />
     <span class="actor-list-item-title">{{actor.name}}</span>
   </div>
 </template>
