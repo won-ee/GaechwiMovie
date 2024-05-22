@@ -177,26 +177,34 @@ def dislike_movie(request, movie_pk):
     
 # 영화 추천 알고리즘
 @api_view(['GET'])
-def recommended(request, user_pk):
-    user_keywords = Keyword.objects.filter(user_keywords__user=user_pk, user_keywords__count__gt=0).annotate(count=Count('user_keywords__count'))
+def recommended(request, user_pk, page_pk):
+    # 특정 사용자가 좋아요한 키워드와 그 count를 가져옵니다.
+    user_keywords = UserKeyword.objects.filter(user_id=user_pk, count__gt=0)
     
-    # 사용자 키워드를 기준으로 영화를 필터링
+    # 사용자가 좋아요한 키워드를 리스트로 추출
+    keyword_ids = user_keywords.values_list('keyword_id', flat=True)
+
+    # 사용자가 좋아요한 영화 제외하고, 키워드 기반으로 영화를 필터링
     recommended_movies = Movie.objects.filter(
-        keywords__in=user_keywords
+        keywords__in=keyword_ids
     ).exclude(
         like_users__id=user_pk
-        ).annotate(
+    ).annotate(
         keyword_match_count=Sum(
             Case(
-                When(keywords__in=user_keywords, then=1),
+                *[
+                    When(keywords=keyword_id, then=user_keyword.count) 
+                    for keyword_id, user_keyword in zip(keyword_ids, user_keywords)
+                ],
                 default=0,
                 output_field=IntegerField()
             )
         )
     ).order_by('-keyword_match_count').distinct()
+    
     paginator = Paginator(recommended_movies, 20)
-
-    page = request.GET.get('page', 1)
+    
+    page = request.GET.get('page', page_pk)
     page_movies = paginator.get_page(page)
     serializer = MovieSerializer(page_movies, many=True)
     

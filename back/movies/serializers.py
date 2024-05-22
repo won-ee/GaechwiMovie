@@ -8,7 +8,7 @@ User = get_user_model()
 class MovieListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('pk', 'title', 'poster_image')
+        fields = ('id', 'title', 'poster_image')
 
 
 # 단일 영화 상세 정보
@@ -97,7 +97,7 @@ class ActorSerializer(serializers.ModelSerializer):
     class MovieSerializer(serializers.ModelSerializer):
         class Meta:
             model = Movie
-            fields = ('title', 'poster_image', 'pk')
+            fields = ('title', 'poster_image', 'id')
 
     movies = MovieSerializer(many=True, read_only=True)
 
