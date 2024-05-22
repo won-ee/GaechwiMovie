@@ -54,13 +54,13 @@ class KeywordSerializer(serializers.ModelSerializer):
         model = Keyword
         fields = ('id', 'name')
 
-# 영화 추찬
+# 영화 추천
 class RecommendedSerializer(serializers.ModelSerializer):
 
     class MovieSerializer(serializers.ModelSerializer):
         class Meta:
             model = Movie
-            field = ('pk', 'title', 'poster_image')
+            field = ('id', 'title', 'poster_image')
 
 # 리뷰
 class ReviewSerializer(serializers.ModelSerializer):
@@ -112,7 +112,7 @@ class MovieSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Movie
-        fields = ('pk', 'title', 'poster_image', 'similarity')
+        fields = ('id', 'title', 'poster_image', 'similarity')
 
 # 검색한 배우와 비슷한 배우
 class ActorSearchSerializer(serializers.ModelSerializer):

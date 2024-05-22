@@ -215,8 +215,8 @@ def recommended(request, user_pk, page_pk):
 def search1(lst, keyword):
     fetch_data = []
     for data in lst:
-        tmp = {'pk': 0, 'title': '', 'poster_image':'', 'similarity':''}
-        tmp['pk'] = data['pk']; tmp['title'] = data['title']; tmp['poster_image'] = data['poster_image']
+        tmp = {'id': 0, 'title': '', 'poster_image':'', 'similarity':''}
+        tmp['id'] = data['id']; tmp['title'] = data['title']; tmp['poster_image'] = data['poster_image']
         tmp['similarity'] = jaro_winkler_similarity(keyword, data['title'])
         fetch_data.append(tmp)
     fetch_data.sort(key=lambda x : -x['similarity'])
