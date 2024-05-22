@@ -202,7 +202,7 @@ def recommended(request, user_pk, page_pk):
         )
     ).order_by('-keyword_match_count').distinct()
     
-    paginator = Paginator(recommended_movies, 20)
+    paginator = Paginator(recommended_movies, 10)
     
     page = request.GET.get('page', page_pk)
     page_movies = paginator.get_page(page)
