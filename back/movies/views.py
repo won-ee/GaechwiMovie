@@ -142,15 +142,20 @@ def remove_user_keywords(user, movie):
 def like_movie(request, movie_pk):
     user = request.user
     movie = get_object_or_404(Movie, pk=movie_pk)
+    # 좋아요가 눌러져 있을 때
     if movie.like_users.filter(pk=user.pk).exists():
         movie.like_users.remove(user)
+        # 키워드-1
         remove_user_keywords(user, movie)
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
+    # 좋아요 안 눌러져 있을 때
     else:
         if movie.dislike_users.filter(pk=user.pk).exists():
             movie.dislike_users.remove(user)
+            # 싫어요 취소 되니까 키워드+1
             add_user_keywords(user, movie)
+        # 키워드 +1
         movie.like_users.add(user)
         add_user_keywords(user, movie)
         serializer = MovieSerializer(movie)
