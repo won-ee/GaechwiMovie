@@ -16,6 +16,22 @@
       <i class="fas fa-chevron-right arrow"></i>
     </div>
   </div>
+  <div class="title">
+    <h1>GPT가 추천해준 영화</h1>
+  </div>
+  <div class="movie-container" v-if="gptlist.length">
+    <div class="movie-list-wrapper">
+      <div class="movie-list">
+        <gptcard
+          class="movie-item"
+          v-for="movie in gptlist"
+          :key="movie.id"
+          :movie="movie"
+        />
+      </div>
+      <i class="fas fa-chevron-right arrow"></i>
+    </div>
+  </div>
   <div class="bubbleContainer">
     <div class="bubbleBody">
       <div class="chat">
@@ -40,8 +56,10 @@
 import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import MovieCard from '@/components/movie/MovieCard.vue'
+import gptcard from '@/components/movie/gptcard.vue'
 
 const movielist = ref([])
+const chatmovielist = ref([])
 const userid = localStorage.getItem('userid')
 let pagepk = 1
 
@@ -49,6 +67,11 @@ const fetchData = async () => {
   try {
     const response = await axios.get(`http://127.0.0.1:8000/movies/${userid}/recommended/${pagepk}/`)
     movielist.value = response.data
+    console.log(response.data);
+    response.data.forEach(element => {
+      chatmovielist.value.push(element.title)
+    });
+    // console.log(response.data);
   } catch (error) {
     console.error(error)
   }
@@ -62,6 +85,7 @@ onMounted(async () => {
   nextpage.addEventListener('click', () => {
     pagepk += 1
     fetchData()
+    gptMovie()
   })
 
   const arrows = document.querySelectorAll(".arrow")
@@ -86,10 +110,35 @@ onMounted(async () => {
       }
     })
   })
+  await chatrecommend()
+  await gptMovie()
 })
 
 const inputchat = ref('')
 const chatlog = ref([])
+const chatrecommendlist = ref([])
+
+const chatrecommend = async function() {
+  const api = 'https://api.openai.com/v1/chat/completions'
+  const key = 'sk-proj-2y5MeZ5AwEShg3zqkkbET3BlbkFJMURTlOkcUQlACUtQ8OdU'
+  
+  try {
+    const res = await axios.post(api, {
+      model: 'gpt-4o',
+      messages: [{ role: 'user', content: `${chatmovielist.value}를 기반으로영화를 추천해 주는데${chatmovielist.value}영화는 빼고추천해줘 ''사이의 문자를 tmbd movie id로 바꿔줘 []만 보내줘 `}],
+    }, {
+      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' }
+    })
+    // console.log(res.data.choices[0].message.content)
+    chatrecommendlist.value= res.data.choices[0].message.content.match(/\d+/g).map(Number);
+    console.log(chatrecommendlist);
+  } catch (err) {
+    chatlog.value.push({my: inputchat.value, gpt: '고장'})
+    console.error(err)
+  }
+  
+  inputchat.value = ''
+}
 
 const chat = async function() {
   const api = 'https://api.openai.com/v1/chat/completions'
@@ -97,11 +146,12 @@ const chat = async function() {
   
   try {
     const res = await axios.post(api, {
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4o',
       messages: [{ role: 'user', content: inputchat.value }],
     }, {
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' }
     })
+    console.log(res.data.choices[0].message.content)
     chatlog.value.push({my: inputchat.value, gpt: res.data.choices[0].message.content})
   } catch (err) {
     chatlog.value.push({my: inputchat.value, gpt: '고장'})
@@ -110,6 +160,37 @@ const chat = async function() {
   
   inputchat.value = ''
 }
+const gptlist = ref([])
+const myid = "326ec925602b659f623ccfb9a46396e3"
+
+const gptMovie= async()=>{
+  
+
+ for (const movieid in chatrecommendlist.value){ 
+  console.log(chatrecommendlist.value[movieid]);
+  const options = {
+      method: 'GET',
+      url:`https://api.themoviedb.org/3/movie/${chatrecommendlist.value[movieid]}?${myid}&language=ko`,
+      params: {language: 'ko'},
+      headers: {
+        accept: 'application/json',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzMjZlYzkyNTYwMmI2NTlmNjIzY2NmYjlhNDYzOTZlMyIsInN1YiI6IjY2M2Q3ZDZjOTE0ZDU3Mzk3OGE0MTcwNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.FLkVpZ5-Oy3sFrFpCVurtGQ4vJ-WxnmJhBAzSp7VK-M'
+      }
+    };
+  axios
+  .request(options)
+  .then((response) => {
+    gptlist.value.push(response.data)
+  })
+  .catch((error) => {
+    console.log(error)
+  })}
+   
+  
+  
+}
+
+
 </script>
 
 <style scoped>
@@ -164,7 +245,19 @@ img {
   left: 200px;
   opacity: 70%;
 }
-
+.gpt {
+  position: fixed;
+  width: 200px;
+  height: 60px;
+  margin-top: 80px;
+  border: 0;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white !important;
+  top: 5px;
+  left: 200px;
+  opacity: 70%;
+}
 .bubbleContainer {
   position: relative;
   width: 60vw;
