@@ -121,8 +121,8 @@ def add_user_keywords(user, movie):
     # keyword_ids = movie.keywords.all() -> id가 아니라 value 반환
     keyword_ids = movie.keywords.values_list('id', flat=True)
     for keyword_id in keyword_ids:
-        keyword, created = Keyword.objects.get_or_create(id=keyword_id)
-        user_keyword, created = UserKeyword.objects.get_or_create(user=user, keyword=keyword)
+        keyword = Keyword.objects.get(id=keyword_id)
+        user_keyword, created = UserKeyword.objects.get_or_create(user=user, keyword_id=keyword_id)
         user_keyword.count += 1
         user_keyword.save()
     return
@@ -131,8 +131,8 @@ def add_user_keywords(user, movie):
 def remove_user_keywords(user, movie):
     keyword_ids = movie.keywords.values_list('id', flat=True)
     for keyword_id in keyword_ids:
-        keyword, created = Keyword.objects.get_or_create(id=keyword_id)
-        user_keyword, created = UserKeyword.objects.get_or_create(user=user, keyword=keyword)
+        keyword = Keyword.objects.get(id=keyword_id)
+        user_keyword, created = UserKeyword.objects.get_or_create(user=user, keyword_id=keyword_id)
         user_keyword.count -= 1
         user_keyword.save()
     return
@@ -183,13 +183,13 @@ def dislike_movie(request, movie_pk):
 # 영화 추천 알고리즘
 @api_view(['GET'])
 def recommended(request, user_pk, page_pk):
-    # 특정 사용자가 좋아요한 키워드와 그 count를 가져옵니다.
+    # count가 0보다 큰 keywords를 추출
     user_keywords = UserKeyword.objects.filter(user_id=user_pk, count__gt=0)
     
-    # 사용자가 좋아요한 키워드를 리스트로 추출
+    # keywords id 리스트 생성
     keyword_ids = user_keywords.values_list('keyword_id', flat=True)
 
-    # 사용자가 좋아요한 영화 제외하고, 키워드 기반으로 영화를 필터링
+    # 사용자가 좋아요한 영화 제외하고, 각 키워드의 count 합을 기준으로 큰 순서부터 정렬
     recommended_movies = Movie.objects.filter(
         keywords__in=keyword_ids
     ).exclude(
@@ -207,6 +207,7 @@ def recommended(request, user_pk, page_pk):
         )
     ).order_by('-keyword_match_count').distinct()
     
+    # 한 페이지당 10개의 데이터 저장
     paginator = Paginator(recommended_movies, 10)
     
     page = request.GET.get('page', page_pk)
