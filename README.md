@@ -183,13 +183,9 @@ def recommended(request, user_pk, page_pk):
 ### 리뷰 페이지
 ![image](assets/review.png)
 
-<<<<<<< HEAD
-![image-20220527081236576](README.assets/image-20220527081246576.png)
-=======
 ### login/signup
 ![image](assets/login.png)
 ![image](assets/signup.png)
->>>>>>> b3ecdcda7c4ef6ffb7aad61a47ff790b703a543a
 
 ### 프로필
 ![image](assets/profile.png)
