@@ -70,9 +70,13 @@
 
 ### 영화 추천 알고리즘
 
-영화마다 가지고 있는 키워드들이 있고 그 키워드 모델과 유저 모델을 관계 맺어, 
+영화마다 가지고 있는 키워드들이 있고 그 키워드 모델과 유저 모델을 관계 맺어, count필드가 들어 있는 Userkeyword모델을 생성합니다.
+
+그 후 좋아요 누른 영화의 키워드마다 +1,
+싫어요 누른 영화의 키워드마다 -1을 합니다.
 
 ```
+# 좋아요 누르기
 @api_view(['POST'])
 def like_movie(request, movie_pk):
     user = request.user
@@ -90,12 +94,70 @@ def like_movie(request, movie_pk):
             movie.dislike_users.remove(user)
             # 싫어요 취소 되니까 키워드+1
             add_user_keywords(user, movie)
-        # 키워드 +1
         movie.like_users.add(user)
+        # 키워드 +1
         add_user_keywords(user, movie)
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
 ```
+ - 싫어요 누르는 함수도 위와 똑같으니 생략
+
+```
+# 키워드 + 1
+def add_user_keywords(user, movie):
+    # id를 받기 위해 values_list 사용
+    keyword_ids = movie.keywords.values_list('id', flat=True)
+    for keyword_id in keyword_ids:
+        # 필드에 키워드가 없으면 생성
+        user_keyword, created = UserKeyword.objects.get_or_create(user=user, keyword_id=keyword_id)
+        # 카운트
+        user_keyword.count += 1
+        user_keyword.save()
+    return
+```
+- 키워드 -1 함수도 위와 똑같으니 생략
+
+count가 0보다 큰 키워드들만 추출해서 단순히 좋아하는 keyword의 개수가 아닌 내가 좋아요 누른 count의 합을 기준으로 데이터를 뽑아왔습니다.
+```
+# 영화 추천 알고리즘
+@api_view(['GET'])
+def recommended(request, user_pk, page_pk):
+    # count가 0보다 큰 keywords를 추출
+    user_keywords = UserKeyword.objects.filter(user_id=user_pk, count__gt=0)
+    
+    # keywords id 리스트 생성
+    keyword_ids = user_keywords.values_list('keyword_id', flat=True)
+
+    # 사용자가 좋아요한 영화 제외하고, 각 키워드의 count 합을 기준으로 큰 순서부터 정렬
+    recommended_movies = Movie.objects.filter(
+        keywords__in=keyword_ids
+    ).exclude(
+        like_users__id=user_pk
+    ).annotate(
+        keyword_match_count=Sum(
+            Case(
+                *[
+                    When(keywords=keyword_id, then=user_keyword.count) 
+                    for keyword_id, user_keyword in zip(keyword_ids, user_keywords)
+                ],
+                default=0,
+                output_field=IntegerField()
+            )
+        )
+    ).order_by('-keyword_match_count').distinct()
+    
+    # 한 페이지당 10개의 데이터 저장
+    paginator = Paginator(recommended_movies, 10)
+    
+    page = request.GET.get('page', page_pk)
+    page_movies = paginator.get_page(page)
+    serializer = MovieSerializer(page_movies, many=True)
+    
+    return Response(serializer.data)
+```
+
+
+
 
 ### 홈 화면
 ![image](assets/main.png)
