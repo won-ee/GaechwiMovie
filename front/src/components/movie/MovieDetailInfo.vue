@@ -11,9 +11,14 @@
             class="mt-2 movie-poster-image img-fluid"
             :src="getImageUrl(movie.poster_image)"
           />
-          <div @click="router.push({name:'review',params:{'moiveId':movie.id}})">
+          <div @click="router.push({name:'CreateReview',params:{'moiveId':movie.id}})">
             <button class="createeReview" type="submit" form="message">
               Create Review
+            </button>
+          </div>
+          <div @click="router.push({name:'review',params:{'moiveId':movie.id}})">
+            <button class="createeReview" type="submit" form="message">
+              Review
             </button>
           </div>
         </div>
@@ -71,8 +76,6 @@ import axios from 'axios'
 const route = useRoute()
 const router = useRouter()
 const movie = ref([])
-const reviewlist = ref([])
-const userkey = localStorage.getItem('userkey')
 const url = ref([])
 const director = ref([])
 
@@ -150,38 +153,11 @@ const dislikemovie =function(){
     })
     fetchData()
 }
-const deleteReview = function(reviewpk){
-  axios({
-    method: 'delete',
-    url: `http://127.0.0.1:8000/movies/${movie.value.id}/${reviewpk}/delete_review/`,
-    headers: { Authorization: `Token ${userkey}` }
-  })
-  .then((response) => {
-    console.log(response)
-    getReview()
-  })
-  .catch((error) => {
-    console.log(error)
-  })
-}
 
-const getReview = async () => {
-  return axios({
-    method: 'get',
-    url: `http://127.0.0.1:8000/movies/${movie.value.id}/reviews`,
-  })
-  .then((response) => {
-    reviewlist.value = response.data
-  })
-  .catch((error) => {
-    console.log(error)
-  })
-}
 
 onMounted(async () => {
   await getMovies()
 
-  await getReview()
 })
 </script>
 

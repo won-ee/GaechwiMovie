@@ -9,7 +9,6 @@
                 <div class="phi-profile-picture-inner flexbox">
                   <img class="phi-profile-picture" :src="profileSrc" alt="Profile Picture">
                 </div>
-                <img class="phi-profile-picture-blur" :src="profileSrc" alt="Profile Picture Blur">
               </div>
               <div class="phi-profile-username-wrapper flexbox-col-left">
                 <h3 class="phi-profile-username flexbox">{{ profile.username }}<span class="material-icons-round">verified</span></h3>
@@ -207,15 +206,6 @@ html, body, #main {
   min-height: 100%;
   position: absolute;
   object-fit: cover;
-}
-.phi-profile-picture-blur {
-  top: 1em;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  border-radius: 50%;
-  transform: scale(.8, .8);
-  filter: blur(1rem) hue-rotate(-5deg) saturate(1.25);
 }
 .phi-profile-username span {
   margin: 0 0 0 .3em;

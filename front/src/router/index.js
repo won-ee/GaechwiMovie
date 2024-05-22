@@ -8,6 +8,7 @@ import MovieChoiceView from '@/views/MovieChoiceView.vue'
 import UserLoginView from '@/views/UserLoginView.vue'
 import UserSignUpView from '@/views/UserSignUpView.vue'
 import UserProfileView from '@/views/UserProfileView.vue'
+import CreateReviewView from '@/views/CreateReviewView.vue'
 import ReviewView from '@/views/ReviewView.vue'
 
 const router = createRouter({
@@ -57,6 +58,11 @@ const router = createRouter({
       path: '/userprofile',
       name: 'userprofile',
       component: UserProfileView
+    },
+    {
+      path: '/CreateReview/:moiveId',
+      name: 'CreateReview',
+      component: CreateReviewView
     },
     {
       path: '/review/:moiveId',
