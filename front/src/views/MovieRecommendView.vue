@@ -1,197 +1,136 @@
 <template>
-  <div class="title">
-    <h1>GAECHWI's Movie Recommend</h1>
-  </div>
-  <button class="nextpage">다시 추천해주세요</button>
-  <div class="movie-container" v-if="movielist.length">
-    <div class="movie-list-wrapper">
-      <div class="movie-list">
-        <MovieCard
-          class="movie-item"
-          v-for="movie in movielist"
-          :key="movie.id"
-          :movie="movie"
-        />
-      </div>
-      <i class="fas fa-chevron-right arrow"></i>
-    </div>
-  </div>
-  <div class="title">
-    <h1>Chat GPT's Movie Recommend</h1>
-  </div>
-  <div class="gpt-movie-container" v-if="gptlist.length">
-    <div class="gpt-movie-list-wrapper">
-      <div class="gpt-movie-list">
-        <gptcard
-          class="gmovie-item"
-          v-for="movie in gptlist"
-          :key="movie.id"
-          :movie="movie"
-        />
-      </div>
-      <i class="fas fa-chevron-right gpt-arrow"></i>
-    </div>
-  </div>
-  <div class="bubbleContainer">
-    <div class="bubbleBody">
-      <div class="chat">
-        <div v-for="(chat, index) in chatlog" :key="'chat' + index" class="chat-message">
-          <div class="mychat" v-if="chat.my">{{ chat.my }}</div>
-          <div class="gptchat" v-if="chat.gpt">{{ chat.gpt }}</div>
+  <div class="container">
+    <div class="movie-list-container">
+      <h1 class="movie-list-title">GAECHWI's Movie Recommend</h1>
+      <button class="nextpage">다시 추천해주세요</button>
+      <div class="movie-list-wrapper">
+        <div class="movie-list" v-if="movielist.length">
+          <MovieCard
+            class="movie-item"
+            v-for="movie in movielist"
+            :key="movie.id"
+            :movie="movie"
+          />
         </div>
+        <p v-else>검색 결과가 없습니다.</p>
+        <i class="fas fa-chevron-right arrow"></i>
       </div>
-      <div class="chat-input-container">
-        <input 
-          type="text" 
-          v-model="inputchat" 
-          name="formUsername" 
-          placeholder="채팅을 시작하세요..."
-          @keydown.enter="chat()">
-        <button class="btnSendMessage" type="submit" @click="chat()">Send</button>
+      <h1 class="gpt-list-title">Chat GPT's Movie Recommend</h1>
+      <div class="gpt-list-wrapper">
+        <div class="gpt-list" v-if="gptlist.length">
+          <gptcard
+            class="gpt-item"
+            v-for="movie in gptlist"
+            :key="movie.id"
+            :movie="movie"
+          />
+        </div>
+        <p v-else>검색 결과가 없습니다.</p>
+        <i class="fas fa-chevron-right gpt-arrow"></i>
+      </div>
+    </div>
+    <div class="bubbleContainer">
+      <h1>Chat GPT Chat-bot</h1>
+      <div class="bubbleBody">
+        <div class="chat">
+          <div
+            v-for="(chat, index) in chatlog"
+            :key="'chat' + index"
+            class="chat-message"
+          >
+            <div class="mychat" v-if="chat.my">{{ chat.my }}</div>
+            <div class="gptchat" v-if="chat.gpt">{{ chat.gpt }}</div>
+          </div>
+        </div>
+        <div class="chat-input-container">
+          <input
+            type="text"
+            v-model="inputchat"
+            name="formUsername"
+            placeholder="채팅을 시작하세요..."
+            @keydown.enter="chat()"
+          />
+          <button class="btnSendMessage" type="submit" @click="chat()">Send</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
-
 <script setup>
-import axios from 'axios'
-import { ref, onMounted } from 'vue'
-import MovieCard from '@/components/movie/MovieCard.vue'
-import gptcard from '@/components/movie/gptcard.vue'
+import axios from 'axios';
+import { ref, onMounted, nextTick } from 'vue';
+import MovieCard from '@/components/movie/MovieCard.vue';
+import gptcard from '@/components/movie/gptcard.vue';
 
-const movielist = ref([])
-const chatmovielist = ref([])
-const userid = localStorage.getItem('userid')
-let pagepk = 1
+const movielist = ref([]);
+const chatmovielist = ref([]);
+const userid = localStorage.getItem('userid');
+let pagepk = 1;
 
 const fetchData = async () => {
   try {
-    const response = await axios.get(`http://127.0.0.1:8000/movies/${userid}/recommended/${pagepk}/`)
-    movielist.value = response.data
-    console.log(response.data)
+    const response = await axios.get(`http://127.0.0.1:8000/movies/${userid}/recommended/${pagepk}/`);
+    movielist.value = response.data;
+    console.log(response.data);
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
-}
+};
 
-onMounted(async () => {
-  await fetchData()
-
-  const nextpage = document.querySelector('.nextpage')
-
-  nextpage.addEventListener('click', () => {
-    pagepk += 1
-    fetchData()
-    gptMovie()
-  })
-
-  const arrows = document.querySelectorAll('.arrow')
-  const movieLists = document.querySelectorAll('.movie-list')
-
-  const gptarrows = document.querySelectorAll('.gpt-arrow')
-  const gptmovieLists = document.querySelectorAll('.gpt-movie-list')
-
-  arrows.forEach((arrow, i) => {
-    const itemNumber = movieLists[i].querySelectorAll('.movie-item').length
-    let clickCounter = 0
-
-    arrow.addEventListener('click', () => {
-      const ratio = Math.floor(window.innerWidth / 270)
-      clickCounter++
-      const currentTransform = window.getComputedStyle(movieLists[i]).transform
-      const matrix = currentTransform !== 'none' ? currentTransform : 'matrix(1, 0, 0, 1, 0, 0)'
-      const translateX = parseInt(matrix.split(',')[4].trim())
-
-      if (itemNumber - (4 + clickCounter) + (4 - ratio) >= 0) {
-        movieLists[i].style.transform = `translateX(${translateX - 300}px)`
-      } else {
-        movieLists[i].style.transform = 'translateX(0)'
-        clickCounter = 0
-      }
-    })
-  })
-
-  if (gptarrows.length > 0 && gptmovieLists.length > 0) {
-    gptarrows.forEach((gptarrow, i) => {
-      if (gptmovieLists[i]) {
-        const itemNumber = gptmovieLists[i].querySelectorAll('.gmovie-item').length
-        let clickCounter = 0
-
-        gptarrow.addEventListener('click', () => {
-          const ratio = Math.floor(window.innerWidth / 270)
-          clickCounter++
-          const currentTransform = window.getComputedStyle(gptmovieLists[i]).transform
-          const matrix = currentTransform !== 'none' ? currentTransform : 'matrix(1, 0, 0, 1, 0, 0)'
-          const translateX = parseInt(matrix.split(',')[4].trim())
-
-          if (itemNumber - (4 + clickCounter) + (4 - ratio) >= 0) {
-            gptmovieLists[i].style.transform = `translateX(${translateX - 300}px)`
-          } else {
-            gptmovieLists[i].style.transform = 'translateX(0)'
-            clickCounter = 0
-          }
-        })
-      }
-    })
-  }
-  await getlikeMovie()
-  await chatrecommend()
-  await gptMovie()
-
-})
-
-const inputchat = ref('')
-const chatlog = ref([])
-const chatrecommendlist = ref([])
+const inputchat = ref('');
+const chatlog = ref([]);
+const chatrecommendlist = ref([]);
 
 const chatrecommend = async function () {
-  const api = 'https://api.openai.com/v1/chat/completions'
-  const key = 'sk-proj-2y5MeZ5AwEShg3zqkkbET3BlbkFJMURTlOkcUQlACUtQ8OdU'
-  
+  const api = 'https://api.openai.com/v1/chat/completions';
+  const key = 'sk-proj-2y5MeZ5AwEShg3zqkkbET3BlbkFJMURTlOkcUQlACUtQ8OdU';
+
   try {
     const res = await axios.post(api, {
       model: 'gpt-4o',
-      messages: [{ role: 'user', 
-      content: `${chatmovielist.value}를 기반으로 영화를 추천해 주는데 ${chatmovielist.value} 영화는 빼고 추천해줘 
-      ''사이의 문자를 tmbd movie id로 바꿔서 []만  보내줘 ${chatmovielist.value}영화가 너가 보내주는 리스트에 들어있다면 다 빼줘 ` }],
+      messages: [{
+        role: 'user',
+        content: `${chatmovielist.value}를 기반으로 영화를 추천해 주는데 ${chatmovielist.value} 영화는 빼고 추천해줘 
+        ''사이의 문자를 tmbd movie id로 바꿔서 10개만 담에서 []만 보내줘 ${chatmovielist.value}영화가 너가 보내주는 리스트에 들어있다면 다 빼줘`
+      }],
     }, {
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' }
-    })
-    chatrecommendlist.value = res.data.choices[0].message.content.match(/\d+/g).map(Number)
-    console.log(chatrecommendlist.value)
+    });
+    chatrecommendlist.value = res.data.choices[0].message.content.match(/\d+/g).map(Number);
+    console.log(chatrecommendlist.value);
   } catch (err) {
-    chatlog.value.push({ my: inputchat.value, gpt: '고장' })
-    console.error(err)
+    chatlog.value.push({ my: inputchat.value, gpt: '고장' });
+    console.error(err);
   }
-  inputchat.value = ''
-}
+  inputchat.value = '';
+};
 
 const chat = async function () {
-  const api = 'https://api.openai.com/v1/chat/completions'
-  const key = 'sk-proj-2y5MeZ5AwEShg3zqkkbET3BlbkFJMURTlOkcUQlACUtQ8OdU'
-  
+  const api = 'https://api.openai.com/v1/chat/completions';
+  const key = 'sk-proj-2y5MeZ5AwEShg3zqkkbET3BlbkFJMURTlOkcUQlACUtQ8OdU';
+
   try {
     const res = await axios.post(api, {
       model: 'gpt-4o',
       messages: [{ role: 'user', content: inputchat.value }],
     }, {
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' }
-    })
-    chatlog.value.push({ my: inputchat.value, gpt: res.data.choices[0].message.content })
+    });
+    chatlog.value.push({ my: inputchat.value, gpt: res.data.choices[0].message.content });
   } catch (err) {
-    chatlog.value.push({ my: inputchat.value, gpt: '고장' })
-    console.error(err)
+    chatlog.value.push({ my: inputchat.value, gpt: '고장' });
+    console.error(err);
   }
-  inputchat.value = ''
-}
+  inputchat.value = '';
+};
 
-const gptlist = ref([])
-const myid = '326ec925602b659f623ccfb9a46396e3'
+const gptlist = ref([]);
+const myid = '326ec925602b659f623ccfb9a46396e3';
 
 const gptMovie = async () => {
   for (const movieid of chatrecommendlist.value) {
-    console.log(movieid)
+    console.log(movieid);
     const options = {
       method: 'GET',
       url: `https://api.themoviedb.org/3/movie/${movieid}?api_key=${myid}`,
@@ -200,44 +139,107 @@ const gptMovie = async () => {
         accept: 'application/json',
         Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzMjZlYzkyNTYwMmI2NTlmNjIzY2NmYjlhNDYzOTZlMyIsInN1YiI6IjY2M2Q3ZDZjOTE0ZDU3Mzk3OGE0MTcwNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.FLkVpZ5-Oy3sFrFpCVurtGQ4vJ-WxnmJhBAzSp7VK-M'
       }
-    }
+    };
     try {
-      const response = await axios.request(options)
-      gptlist.value.push(response.data)
+      const response = await axios.request(options);
+      gptlist.value.push(response.data);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   }
-}
+};
 
 const getlikeMovie = async () => {
   try {
     const response = await axios.get(`http://127.0.0.1:8000/movies/${localStorage.getItem('userid')}/user_like_movie`);
-    
+
     response.data.like_movies.forEach(element => {
-      chatmovielist.value.push(element.title)
-    })
+      chatmovielist.value.push(element.title);
+    });
     console.log(chatmovielist.value);
   } catch (error) {
     console.error(error);
   }
 };
+
+onMounted(async () => {
+  await fetchData();
+  await getlikeMovie();
+  await chatrecommend();
+  await gptMovie();
+
+  const nextpage = document.querySelector('.nextpage');
+  nextpage.addEventListener('click', async () => {
+    pagepk += 1;
+    await fetchData();
+    await chatrecommend();
+    await gptMovie();
+  });
+
+  await nextTick(() => {
+    const arrows = document.querySelectorAll(".arrow");
+    const movieLists = document.querySelectorAll(".movie-list");
+
+    arrows.forEach((arrow, i) => {
+      const itemNumber = movieLists[i].querySelectorAll(".movie-item").length;
+      let clickCounter = 0;
+
+      arrow.addEventListener("click", () => {
+        const ratio = Math.floor(window.innerWidth / 270);
+        clickCounter++;
+        const currentTransform = window.getComputedStyle(movieLists[i]).transform;
+        const matrix = currentTransform !== 'none' ? currentTransform : 'matrix(1, 0, 0, 1, 0, 0)';
+        const translateX = parseInt(matrix.split(',')[4].trim());
+
+        if (itemNumber - (4 + clickCounter) + (4 - ratio) >= 0) {
+          movieLists[i].style.transform = `translateX(${translateX - 300}px)`;
+        } else {
+          movieLists[i].style.transform = "translateX(0)";
+          clickCounter = 0;
+        }
+      });
+    });
+  });
+
+  await nextTick(() => {
+    const arrows = document.querySelectorAll(".gpt-arrow");
+    const gptLists = document.querySelectorAll(".gpt-list");
+
+    arrows.forEach((arrow, i) => {
+      const itemNumber = gptLists[i].querySelectorAll(".gpt-item").length;
+      let clickCounter = 0;
+
+      arrow.addEventListener("click", () => {
+        const ratio = Math.floor(window.innerWidth / 270);
+        clickCounter++;
+        const currentTransform = window.getComputedStyle(gptLists[i]).transform;
+        const matrix = currentTransform !== 'none' ? currentTransform : 'matrix(1, 0, 0, 1, 0, 0)';
+        const translateX = parseInt(matrix.split(',')[4].trim());
+
+        if (itemNumber - (4 + clickCounter) + (4 - ratio) >= 0) {
+          gptLists[i].style.transform = `translateX(${translateX - 300}px)`;
+        } else {
+          gptLists[i].style.transform = "translateX(0)";
+          clickCounter = 0;
+        }
+      });
+    });
+  });
+});
 </script>
 
 <style scoped>
-.title {
-  margin-top: 5px;
-  margin-left: 20px;
-  color: #fff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+.container {
+  background-color: #151515;
+  min-height: calc(100vh - 50px);
+  color: white;
+  transition: 1s ease all;
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
 }
-
-img {
-  width: 200px;
-}
-
-.movie-container {
-  margin-top: 20px;
+.movie-list-container {
+  padding: 20px 0;
 }
 
 .movie-list-wrapper {
@@ -252,89 +254,72 @@ img {
   transform: translateX(0);
   transition: all 1s ease-in-out;
 }
-
-.arrow {
-  font-size: 120px;
-  position: absolute;
-  top: 90px;
-  right: 0;
-  color: lightgray;
-  opacity: 0.5;
-  cursor: pointer;
-}
-
-.gpt-movie-container {
-  margin-top: 20px;
-}
-
-.gpt-movie-list-wrapper {
+.gpt-list-wrapper {
   position: relative;
   overflow: hidden;
 }
 
-.gpt-movie-list {
+.gpt-list {
   display: flex;
   align-items: center;
   height: 300px;
   transform: translateX(0);
   transition: all 1s ease-in-out;
 }
-
-.gpt-arrow {
-  font-size: 120px;
+.arrow {
+  font-size: 50px;
   position: absolute;
-  top: 90px;
+  top: 50%;
   right: 0;
+  transform: translateY(-50%);
   color: lightgray;
   opacity: 0.5;
   cursor: pointer;
 }
-
-.nextpage {
+.gpt-arrow {
+  font-size: 50px;
   position: absolute;
-  width: 200px;
-  height: 60px;
-  margin-top: 80px;
-  border: 0;
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  color: white !important;
-  top: 5px;
-  right: 20px;
-  opacity: 70%;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  color: lightgray;
+  opacity: 0.5;
+  cursor: pointer;
 }
-
-.gpt {
-  position: fixed;
+.nextpage {
+  display: block;
+  position: absolute;
+  top: 95px;
+  right: 10%;
   width: 200px;
   height: 60px;
-  margin-top: 80px;
+  margin: 20px 0;
   border: 0;
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   color: white !important;
-  top: 5px;
-  left: 200px;
   opacity: 70%;
+  cursor: pointer;
+  text-align: center;
+  line-height: 60px;
 }
 
 .bubbleContainer {
-  position: relative;
   width: 60vw;
-  height: 450px;
+  height: 600px;
   margin: 50px auto 0;
-  margin-top: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .bubbleBody {
-  position: relative;
   width: 100%;
-  height: 100%;
+  height: 93%;
   background-color: rgba(255, 255, 255, 0.3);
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
 }
@@ -411,5 +396,4 @@ input::placeholder {
 .btnSendMessage:hover {
   background-color: #084298;
 }
-
 </style>
