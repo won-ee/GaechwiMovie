@@ -2,27 +2,34 @@
 
 ## 📚 목차
 
-1. [프로젝트 개요](#🗓️프로젝트-개요)
-
-2. [팀](#👯‍♀️팀원-정보-및-업무-분담-내역)
-   
-3. [서비스 소개](#📢서비스-소개)
-  
-    1. [서비스 기획 목표](#서비스-기획-목표)
-   
-    2. [ERD](#ERD)
-   
-    3. [WireFrame](#WireFrame)
-
-    4. [영화 추천 알고리즘](#영화-추천-알고리즘)
-   
-4. [기능 구현/ 요구사항](#💻기능-구현-요구사항)
-    1. [구현 화면](#홈-화면)
-    2. [요구 사항](#🎯-요구-사항--기능구현) 
-
-5. [느낀점](#👍-느낀-점)
-   
-6. [오픈소스 출처](#📁-오픈소스-출처)
+- [ 개취무비](#-개취무비)
+  - [📚 목차](#-목차)
+  - [🗓️프로젝트 개요](#️프로젝트-개요)
+    - [진행 기간](#진행-기간)
+    - [기술 스택](#기술-스택)
+  - [👯‍♀️팀원 정보 및 업무 분담 내역](#️팀원-정보-및-업무-분담-내역)
+  - [📢서비스 소개](#서비스-소개)
+    - [서비스 기획 목표](#서비스-기획-목표)
+    - [ERD](#erd)
+    - [Wireframe](#wireframe)
+      - [Figma](#figma)
+    - [영화 추천 알고리즘](#영화-추천-알고리즘)
+    - [gpt - 영화 추천 알고리즘](#gpt---영화-추천-알고리즘)
+  - [💻기능 구현/ 요구사항](#기능-구현-요구사항)
+    - [홈 화면](#홈-화면)
+    - [영화 검색 페이지](#영화-검색-페이지)
+    - [영화 디테일 페이지](#영화-디테일-페이지)
+    - [배우 디테일 페이지](#배우-디테일-페이지)
+    - [리뷰 생성](#리뷰-생성)
+    - [리뷰 페이지](#리뷰-페이지)
+    - [랜덤 추천](#랜덤-추천)
+    - [영화 추천](#영화-추천)
+    - [챗봇](#챗봇)
+    - [signup/login](#signuplogin)
+    - [프로필](#프로필)
+    - [🎯 요구 사항](#-요구-사항)
+  - [👍 느낀 점](#-느낀-점)
+  - [📁 오픈소스 출처](#-오픈소스-출처)
    
 
 
@@ -53,7 +60,8 @@
 
 ### 서비스 기획 목표
 
-사용자가 자신의 취향에 맞는 영화를 찾는데 시간을 아낄 수 있도록 영화 추천
+사용자가 좋아하는 영화와 싫어하는 영화 정보를 자세히 알려주면 사용자가 싫어하는 영화의 키워드는 최대한 피하고 좋아하는 영화 위주로 영화를 추천함으로써 영화를 추천받아서 영화를 보게 되었을때 시청하게 되는 영화가 취향에 맞지 않아 시간을 날리게 되는 상황을 피할수 있도록 만들어 준다.<br>
+그래서 사용자는 쉽게 자신의 취향에 맞는 영화를 찾아 시청할수 있는 서비스를 만드는 것이 기획 목표이다.
 
 ### ERD
 
@@ -154,6 +162,74 @@ def recommended(request, user_pk, page_pk):
     
     return Response(serializer.data)
 ```
+### gpt - 영화 추천 알고리즘
+1. 사용자가 좋아요 한 영화 리스트를 db에 요청을 보내 가져옵니다.
+```js
+const chatmovielist = ref([])
+const getlikeMovie = async () => {
+    try {
+const response = await axios.get(`http://127.0.0.1:8000/movies/${localStorage.getItem('userid')}/user_like_movie`);
+
+response.data.like_movies.forEach(element => {
+    chatmovielist.value.push(element.title);
+});
+console.log(chatmovielist.value);
+} catch (error) {
+console.error(error);
+}
+};
+```
+2. db에 요청을 보내 가져온 데이터를 리스트 형태로 담아 챗 gpt api에 요청을 보냅니다.
+```js
+const chatrecommend = async function () {
+  const api = 'https://api.openai.com/v1/chat/completions';
+  const key = '';
+
+  try {
+    const res = await axios.post(api, {
+      model: 'gpt-4o',
+      messages: [{
+        role: 'user',
+        content: `${chatmovielist.value}를 기반으로 영화를 추천해 주는데 ${chatmovielist.value} 영화는 빼고 추천해줘 
+        ''사이의 문자를 tmbd movie id로 바꿔서 10개만 담에서 []만 보내줘 ${chatmovielist.value}영화가 너가 보내주는 리스트에 들어있다면 다 빼줘`
+      }],
+    }, {
+      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' }
+    });
+    chatrecommendlist.value = res.data.choices[0].message.content.match(/\d+/g).map(Number);
+    console.log(chatrecommendlist.value);
+  } catch (err) {
+    chatlog.value.push({ my: inputchat.value, gpt: '고장' });
+    console.error(err);
+  }
+  inputchat.value = '';
+};
+```
+3. 가져온 tmdb  movie id 를 tmdb api로 요청을 보냅니다.
+```js
+
+const gptMovie = async () => {
+  for (const movieid of chatrecommendlist.value) {
+    console.log(movieid);
+    const options = {
+      method: 'GET',
+      url: `https://api.themoviedb.org/3/movie/${movieid}?api_key=${myid}`,
+      params: { language: 'ko-KR' },
+      headers: {
+        accept: 'application/json',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzMjZlYzkyNTYwMmI2NTlmNjIzY2NmYjlhNDYzOTZlMyIsInN1YiI6IjY2M2Q3ZDZjOTE0ZDU3Mzk3OGE0MTcwNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.FLkVpZ5-Oy3sFrFpCVurtGQ4vJ-WxnmJhBAzSp7VK-M'
+      }
+    };
+    try {
+      const response = await axios.request(options);
+      gptlist.value.push(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+};
+```
+4. tmdb에서 받은 정보를 페이지에 렌더링 합니다.
 
 ## 💻기능 구현/ 요구사항
 
