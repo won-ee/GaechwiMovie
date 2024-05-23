@@ -70,9 +70,6 @@ const fetchData = async () => {
     const response = await axios.get(`http://127.0.0.1:8000/movies/${userid}/recommended/${pagepk}/`)
     movielist.value = response.data
     console.log(response.data)
-    response.data.forEach(element => {
-      chatmovielist.value.push(element.title)
-    })
   } catch (error) {
     console.error(error)
   }
@@ -138,8 +135,10 @@ onMounted(async () => {
       }
     })
   }
+  await getlikeMovie()
   await chatrecommend()
   await gptMovie()
+
 })
 
 const inputchat = ref('')
@@ -153,7 +152,9 @@ const chatrecommend = async function () {
   try {
     const res = await axios.post(api, {
       model: 'gpt-4o',
-      messages: [{ role: 'user', content: `${chatmovielist.value}를 기반으로 영화를 추천해 주는데 ${chatmovielist.value} 영화는 빼고 추천해줘 '사이의 문자를 tmbd movie id로 바꿔줘 []만 보내줘 ` }],
+      messages: [{ role: 'user', 
+      content: `${chatmovielist.value}를 기반으로 영화를 추천해 주는데 ${chatmovielist.value} 영화는 빼고 추천해줘 
+      ''사이의 문자를 tmbd movie id로 바꿔서 []만  보내줘 ${chatmovielist.value}영화가 너가 보내주는 리스트에 들어있다면 다 빼줘 ` }],
     }, {
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' }
     })
@@ -208,6 +209,19 @@ const gptMovie = async () => {
     }
   }
 }
+
+const getlikeMovie = async () => {
+  try {
+    const response = await axios.get(`http://127.0.0.1:8000/movies/${localStorage.getItem('userid')}/user_like_movie`);
+    
+    response.data.like_movies.forEach(element => {
+      chatmovielist.value.push(element.title)
+    })
+    console.log(chatmovielist.value);
+  } catch (error) {
+    console.error(error);
+  }
+};
 </script>
 
 <style scoped>
