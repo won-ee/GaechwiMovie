@@ -2,11 +2,11 @@
 
 ## 📚 목차
 
-1. [프로젝트 개요](#-프로젝트-개요)
+1. [프로젝트 개요](#-🗓️프로젝트-개요)
 
-2. [팀](#-팀)
+2. [팀](#-👯‍♀️팀원-정보-및-업무-분담-내역)
    
-3. [서비스 소개](#-서비스-소개)
+3. [서비스 소개](#-📢서비스-소개)
   
     1. [서비스 기획 목표](#서비스-기획-목표)
    
@@ -15,14 +15,16 @@
     3. [WireFrame](#WireFrame)
 
     4. [영화 추천 알고리즘](#영화-추천-알고리즘)
+   
+4. [기능 구현/ 요구사항](#💻기능-구현-요구사항)
+    1. [구현 화면](#홈-화면)
+    2. [요구 사항](#🎯-요구-사항--기능구현) 
 
-    5. [구현 기능](#구현-기능)
+5. [느낀점](#👍-느낀-점)
    
-4. [설치 및 실행](#-설치-및-실행)
+6. [오픈소스 출처](#📁-오픈소스-출처)
    
-5. [오픈소스 출처](#-오픈소스-출처)
-   
-6. [느낀점](#-느낀점)
+
 
 
 ## 🗓️프로젝트 개요
@@ -33,7 +35,7 @@
 ### 기술 스택
 
 ![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)
-![GitLab](https://img.shields.io/badge/GitLab-330F63?style=for-the-badge&logo=gitlab&logoColor=white)
+![Notion](https://img.shields.io/badge/Notion-330F63?style=for-the-badge&logo=notion&logoColor=white)
 
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=1D9FD7)![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
 
@@ -41,13 +43,13 @@
   
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)
 
-## 👯팀원 정보 및 업무 분담 내역
+## 👯‍♀️팀원 정보 및 업무 분담 내역
 
 고충원 - 화면 설계서 제작 및 컴포넌트 설계, OST, 영화 명대사 데이터 수집 및 정제, Front-END 개발 및 UI, UX 개선
 
 임성훈 - 영화 데이터 수집 및 정제, 추천 알고리즘 개발, ERD 설계, DB 구출 및 Back-End 개발
 
-## 서비스 소개
+## 📢서비스 소개
 
 ### 서비스 기획 목표
 
@@ -58,7 +60,9 @@
 ![Alt text](assets/image.png)
 
 
-### Figma
+### Wireframe
+
+#### Figma
 ![Alt text](assets/mockup.png)
 
 
@@ -151,18 +155,10 @@ def recommended(request, user_pk, page_pk):
     return Response(serializer.data)
 ```
 
-
-
+## 💻기능 구현/ 요구사항
 
 ### 홈 화면
 ![image](assets/main.png)
-
-###  영화 추천
-![image](assets/movierecommend.png)
-### 랜덤 추천
-![image](assets/random.png)
-### 챗봇
-![image](assets/chatbot.png)
 
 
 ### 영화 검색 페이지
@@ -176,18 +172,22 @@ def recommended(request, user_pk, page_pk):
 ### 리뷰 페이지
 ![image](assets/review.png)
 
-### login/signup
-![image](assets/login.png)
+### 랜덤 추천
+![image](assets/random.png)
+###  영화 추천
+![image](assets/movierecommend.png)
+### 챗봇
+![image](assets/chatbot.png)
+
+### signup/login
 ![image](assets/signup.png)
+![image](assets/login.png)
 
 ### 프로필
 ![image](assets/profile.png)
 
 
-
-
-
-## 🎯   요구 사항 / 기능구현
+### 🎯 요구 사항
 - 구현성공 ⭕
 - 구현실패 ❌
 - 필수 요구사항 ✅
@@ -204,9 +204,13 @@ def recommended(request, user_pk, page_pk):
 8. 영화 검색 알고리즘 ⭕💖
 9. 랜덤 영화 추천 알고리즘 ⭕💖
 
-
 ## 👍 느낀 점
 
 임성훈 - 
 
 고충원 - 
+
+## 📁 오픈소스 출처
+
+- TMDB : https://developer.themoviedb.org/reference/intro/getting-started 
+- GPT : https://openai.com/index/openai-api/
