@@ -84,8 +84,7 @@ const chatrecommendlist = ref([]);
 
 const chatrecommend = async function () {
   const api = 'https://api.openai.com/v1/chat/completions';
-  const key = 'sk-proj-2y5MeZ5AwEShg3zqkkbET3BlbkFJMURTlOkcUQlACUtQ8OdU';
-
+  const key = 'sk-proj-2y5MeZ5AwEShg3zqkkbET3BlbkFJMURTlOkcUQlACUtQ8OdU'
   try {
     const res = await axios.post(api, {
       model: 'gpt-4o',
@@ -107,9 +106,6 @@ const chatrecommend = async function () {
 };
 
 const chat = async function () {
-  const api = 'https://api.openai.com/v1/chat/completions';
-  const key = 'sk-proj-2y5MeZ5AwEShg3zqkkbET3BlbkFJMURTlOkcUQlACUtQ8OdU';
-
   try {
     const res = await axios.post(api, {
       model: 'gpt-4o',

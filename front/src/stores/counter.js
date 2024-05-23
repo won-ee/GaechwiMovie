@@ -7,7 +7,7 @@ export const useMovieStore = defineStore('movie', () => {
   const MovieList = ref([])
   const WorstMovieList = ref([])
   const userkey = ref(null)
-  const isLogin = ref(false)
+  const isLogin = ref( )
   const router = useRouter()
 
   const getMovies = function() {
