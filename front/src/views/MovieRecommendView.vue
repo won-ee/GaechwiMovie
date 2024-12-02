@@ -83,8 +83,8 @@ const chatlog = ref([]);
 const chatrecommendlist = ref([]);
 
 const chatrecommend = async function () {
-  const api = 'https://api.openai.com/v1/chat/completions';
-  const key = 'sk-proj-2y5MeZ5AwEShg3zqkkbET3BlbkFJMURTlOkcUQlACUtQ8OdU'
+  const api = '';
+  const key = ''
   try {
     const res = await axios.post(api, {
       model: 'gpt-4o',
@@ -122,7 +122,7 @@ const chat = async function () {
 };
 
 const gptlist = ref([]);
-const myid = '326ec925602b659f623ccfb9a46396e3';
+const myid = '';
 
 const gptMovie = async () => {
   for (const movieid of chatrecommendlist.value) {
